@@ -9,17 +9,11 @@ import { desc, eq } from 'drizzle-orm';
 export const prerender = false;
 
 // Fetch recent announcements (top 3)
-let recentAnnouncements = [];
-try {
-  recentAnnouncements = await db.select()
-    .from(announcements)
-    .where(eq(announcements.isPublic, true))
-    .orderBy(desc(announcements.isPinned), desc(announcements.createdAt))
-    .limit(3);
-} catch (error) {
-  console.error('Failed to fetch announcements:', error);
-  // Continue rendering page without announcements
-}
+const recentAnnouncements = await db.select()
+  .from(announcements)
+  .where(eq(announcements.isPublic, true))
+  .orderBy(desc(announcements.isPinned), desc(announcements.createdAt))
+  .limit(3);
 
 // Category display info
 const categoryInfo: Record<string, { label: string; color: string }> = {

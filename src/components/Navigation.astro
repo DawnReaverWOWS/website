@@ -3,30 +3,31 @@ const currentPath = Astro.url.pathname;
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/members', label: 'Members' },
-  { href: '/stats', label: 'Statistics' },
+  { href: '/members', label: 'Roster' },
+  { href: '/stats', label: 'Stats' },
+  { href: '/recruitment', label: 'Recruitment' },
 ];
 ---
 
-<nav class="bg-blue-primary text-white shadow-lg">
+<nav class="bg-navy-900 border-b border-navy-700 shadow-lg">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between h-14">
       <!-- Logo/Brand -->
-      <div class="flex items-center space-x-3">
-        <span class="text-gold-DEFAULT text-2xl font-bold">[DAWN]</span>
-        <span class="text-xl font-semibold">DawnReaver</span>
-      </div>
+      <a href="/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+        <span class="text-gold-DEFAULT text-2xl font-display font-bold glow-gold">[DAWN]</span>
+        <span class="text-xl font-bold text-text-primary">DawnReaver</span>
+      </a>
 
       <!-- Navigation Links -->
-      <div class="hidden md:flex space-x-8">
+      <div class="hidden md:flex space-x-6">
         {navLinks.map((link) => (
           <a
             href={link.href}
             class:list={[
-              'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+              'px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors',
               currentPath === link.href
-                ? 'bg-blue-secondary text-gold-DEFAULT'
-                : 'text-white hover:bg-blue-secondary hover:text-gold-light',
+                ? 'text-gold-DEFAULT border-b-2 border-gold-DEFAULT'
+                : 'text-steel-light hover:text-gold-DEFAULT',
             ]}
           >
             {link.label}
@@ -39,7 +40,7 @@ const navLinks = [
         <button
           id="mobile-menu-button"
           type="button"
-          class="text-white hover:text-gold-DEFAULT focus:outline-none focus:ring-2 focus:ring-gold-DEFAULT"
+          class="text-steel-light hover:text-gold-DEFAULT focus:outline-none"
           aria-label="Toggle menu"
         >
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,16 +52,16 @@ const navLinks = [
   </div>
 
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-blue-dark">
+  <div id="mobile-menu" class="hidden md:hidden bg-navy-800 border-t border-navy-700">
     <div class="px-2 pt-2 pb-3 space-y-1">
       {navLinks.map((link) => (
         <a
           href={link.href}
           class:list={[
-            'block px-3 py-2 rounded-md text-base font-medium',
+            'block px-3 py-2 text-sm font-bold uppercase tracking-wide transition-colors',
             currentPath === link.href
-              ? 'bg-blue-secondary text-gold-DEFAULT'
-              : 'text-white hover:bg-blue-secondary hover:text-gold-light',
+              ? 'text-gold-DEFAULT bg-navy-700'
+              : 'text-steel-light hover:text-gold-DEFAULT hover:bg-navy-700',
           ]}
         >
           {link.label}
@@ -71,7 +72,6 @@ const navLinks = [
 </nav>
 
 <script>
-  // Mobile menu toggle
   const button = document.getElementById('mobile-menu-button');
   const menu = document.getElementById('mobile-menu');
 

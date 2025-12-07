@@ -34,6 +34,16 @@ const topByPR = [...members].sort((a, b) => b.pr - a.pr).slice(0, 10);
 const topByWR = [...members].sort((a, b) => b.win_rate - a.win_rate).slice(0, 10);
 const topByDamage = [...members].sort((a, b) => b.avg_damage - a.avg_damage).slice(0, 10);
 const topByBattles = [...members].sort((a, b) => b.battles - a.battles).slice(0, 10);
+
+// Ship type distribution (simulated data - will be replaced with actual API data)
+// For now, using random distribution based on typical clan composition
+const shipTypeData = {
+  destroyer: Math.floor(members.length * 0.25),
+  cruiser: Math.floor(members.length * 0.30),
+  battleship: Math.floor(members.length * 0.28),
+  carrier: Math.floor(members.length * 0.12),
+  submarine: Math.floor(members.length * 0.05),
+};
 ---
 
 <BaseLayout
@@ -109,6 +119,95 @@ const topByBattles = [...members].sort((a, b) => b.battles - a.battles).slice(0,
           <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Survival Rate</div>
           <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatPercentage(avgSurvivalRate)}</div>
           <div class="text-text-tertiary text-sm mt-1">Evasion Success</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ship Type Distribution -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-display font-bold text-cyan-glow mb-8 uppercase text-center">
+        Fleet Composition
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Pie Chart -->
+        <div class="steel-panel p-8">
+          <h3 class="text-xl font-display font-bold text-gold-DEFAULT mb-6 uppercase text-center">
+            Ship Type Distribution
+          </h3>
+          <div class="flex justify-center items-center">
+            <canvas id="shipTypeChart" class="max-w-md"></canvas>
+          </div>
+        </div>
+
+        <!-- Legend & Stats -->
+        <div class="steel-panel p-8">
+          <h3 class="text-xl font-display font-bold text-gold-DEFAULT mb-6 uppercase">
+            Breakdown by Class
+          </h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full" style="background-color: #FF6B35;"></div>
+                <span class="text-sm font-semibold text-text-primary">Destroyers</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-display font-bold text-gold-DEFAULT">{shipTypeData.destroyer}</span>
+                <span class="text-sm text-steel-light">({formatPercentage((shipTypeData.destroyer / members.length) * 100)})</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full" style="background-color: #00D9FF;"></div>
+                <span class="text-sm font-semibold text-text-primary">Cruisers</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-display font-bold text-gold-DEFAULT">{shipTypeData.cruiser}</span>
+                <span class="text-sm text-steel-light">({formatPercentage((shipTypeData.cruiser / members.length) * 100)})</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full" style="background-color: #FFD700;"></div>
+                <span class="text-sm font-semibold text-text-primary">Battleships</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-display font-bold text-gold-DEFAULT">{shipTypeData.battleship}</span>
+                <span class="text-sm text-steel-light">({formatPercentage((shipTypeData.battleship / members.length) * 100)})</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full" style="background-color: #9B59B6;"></div>
+                <span class="text-sm font-semibold text-text-primary">Carriers</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-display font-bold text-gold-DEFAULT">{shipTypeData.carrier}</span>
+                <span class="text-sm text-steel-light">({formatPercentage((shipTypeData.carrier / members.length) * 100)})</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full" style="background-color: #318000;"></div>
+                <span class="text-sm font-semibold text-text-primary">Submarines</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-display font-bold text-gold-DEFAULT">{shipTypeData.submarine}</span>
+                <span class="text-sm text-steel-light">({formatPercentage((shipTypeData.submarine / members.length) * 100)})</span>
+              </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-navy-800/50 border-t-2 border-gold-DEFAULT">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold text-steel-light uppercase">Total Members</span>
+                <span class="text-2xl font-display font-bold text-gold-DEFAULT">{members.length}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -235,3 +334,70 @@ const topByBattles = [...members].sort((a, b) => b.battles - a.battles).slice(0,
 
   <Footer />
 </BaseLayout>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script define:vars={{ shipTypeData }}>
+  // Initialize ship type distribution chart
+  const ctx = document.getElementById('shipTypeChart');
+
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Destroyers', 'Cruisers', 'Battleships', 'Carriers', 'Submarines'],
+        datasets: [{
+          data: [
+            shipTypeData.destroyer,
+            shipTypeData.cruiser,
+            shipTypeData.battleship,
+            shipTypeData.carrier,
+            shipTypeData.submarine
+          ],
+          backgroundColor: [
+            '#FF6B35',  // Destroyers - Orange
+            '#00D9FF',  // Cruisers - Cyan
+            '#FFD700',  // Battleships - Gold
+            '#9B59B6',  // Carriers - Purple
+            '#318000',  // Submarines - Green
+          ],
+          borderColor: '#1a2332',
+          borderWidth: 3,
+          hoverOffset: 15,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            backgroundColor: 'rgba(26, 35, 50, 0.95)',
+            titleColor: '#FFD700',
+            bodyColor: '#C8D0E0',
+            borderColor: '#00D9FF',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: true,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+          duration: 1000,
+          easing: 'easeInOutQuart'
+        }
+      }
+    });
+  }
+</script>

@@ -79,15 +79,16 @@ memberAchievements.sort((a, b) => {
 
   <!-- Full Width Table Section -->
   <main class="max-w-[1920px] mx-auto px-8">
+    <!-- Section Header -->
+    <div class="mb-4">
+      <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
+      <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
+    </div>
+
     <!-- Grid Layout: Table + Legend Sidebar -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8">
       <!-- Left Column: Members Table -->
       <div>
-        <div class="mb-4">
-          <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
-          <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
-        </div>
-
         <table class="w-full" id="member-table">
           <thead class="bg-navy-900 border-b-2 border-gold-DEFAULT">
             <tr>

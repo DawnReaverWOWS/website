@@ -13,37 +13,65 @@ const { members } = Astro.props;
   <!-- Table Header -->
   <div class="bg-blue-primary text-white px-6 py-4">
     <h2 class="text-2xl font-bold">Clan Roster</h2>
-    <p class="text-blue-light text-sm mt-1">{members.length} Active Members</p>
+    <p class="text-blue-light text-sm mt-1"><span id="member-count">{members.length}</span> Active Members</p>
   </div>
 
   <!-- Table -->
   <div class="overflow-x-auto">
-    <table class="w-full">
+    <table class="w-full" id="member-table">
       <thead class="bg-gray-100 border-b-2 border-blue-primary">
         <tr>
           <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
             Rank
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="nickname"
+          >
             Player
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="role"
+          >
             Role
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="battles"
+          >
             Battles
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="win_rate"
+          >
             Win Rate
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="avg_damage"
+          >
             Avg Damage
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="pr"
+          >
             PR
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors select-none"
+            data-sort="last_battle_time"
+          >
             Last Battle
+            <span class="sort-indicator ml-1 text-blue-primary opacity-0">▼</span>
           </th>
         </tr>
       </thead>
@@ -52,9 +80,18 @@ const { members } = Astro.props;
           const prRating = getPRRating(member.pr);
 
           return (
-            <tr class="hover:bg-gray-50 transition-colors">
+            <tr
+              class="hover:bg-gray-50 transition-colors"
+              data-nickname={member.nickname}
+              data-role={member.role}
+              data-battles={member.battles}
+              data-win-rate={member.win_rate}
+              data-avg-damage={member.avg_damage}
+              data-pr={member.pr}
+              data-last-battle={member.last_battle_time || 0}
+            >
               <!-- Rank -->
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+              <td class="rank-cell px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
                 #{index + 1}
               </td>
 
@@ -139,3 +176,89 @@ const { members } = Astro.props;
     </div>
   )}
 </div>
+
+<script>
+  // Client-side table sorting
+  const table = document.getElementById('member-table');
+  const headers = table?.querySelectorAll('th[data-sort]');
+  const tbody = table?.querySelector('tbody');
+
+  let currentSort: string | null = null;
+  let currentDirection: 'asc' | 'desc' = 'desc';
+
+  headers?.forEach(header => {
+    header.addEventListener('click', () => {
+      const sortKey = header.getAttribute('data-sort');
+      if (!sortKey || !tbody) return;
+
+      // Toggle direction if clicking same column, otherwise default to descending
+      if (currentSort === sortKey) {
+        currentDirection = currentDirection === 'desc' ? 'asc' : 'desc';
+      } else {
+        currentDirection = 'desc';
+      }
+      currentSort = sortKey;
+
+      // Update all sort indicators
+      headers.forEach(h => {
+        const indicator = h.querySelector('.sort-indicator');
+        if (indicator) {
+          if (h === header) {
+            indicator.classList.remove('opacity-0');
+            indicator.textContent = currentDirection === 'desc' ? '▼' : '▲';
+          } else {
+            indicator.classList.add('opacity-0');
+          }
+        }
+      });
+
+      // Get all rows and sort them
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      rows.sort((a, b) => {
+        const aValue = a.getAttribute(`data-${sortKey.replace('_', '-')}`);
+        const bValue = b.getAttribute(`data-${sortKey.replace('_', '-')}`);
+
+        // Handle null/empty values
+        if (!aValue && !bValue) return 0;
+        if (!aValue) return 1;
+        if (!bValue) return -1;
+
+        // Determine if numeric or string comparison
+        let comparison = 0;
+        if (sortKey === 'nickname' || sortKey === 'role') {
+          // String comparison
+          comparison = aValue.localeCompare(bValue);
+        } else {
+          // Numeric comparison
+          const aNum = parseFloat(aValue);
+          const bNum = parseFloat(bValue);
+          comparison = aNum - bNum;
+        }
+
+        return currentDirection === 'desc' ? -comparison : comparison;
+      });
+
+      // Clear and re-append rows
+      tbody.innerHTML = '';
+      rows.forEach((row, index) => {
+        // Update rank numbers
+        const rankCell = row.querySelector('.rank-cell');
+        if (rankCell) {
+          rankCell.textContent = `#${index + 1}`;
+        }
+        tbody.appendChild(row);
+      });
+    });
+  });
+</script>
+
+<style>
+  th[data-sort] {
+    position: relative;
+  }
+
+  th[data-sort]:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+</style>

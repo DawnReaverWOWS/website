@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
-import StatsCard from '../components/StatsCard.astro';
 import Footer from '../components/Footer.astro';
 import { getClanInfo, getMembersWithStats } from '../lib/wargaming-api';
 import { formatNumber, formatPercentage } from '../lib/utils';
@@ -38,155 +37,199 @@ const topByBattles = [...members].sort((a, b) => b.battles - a.battles).slice(0,
 ---
 
 <BaseLayout
-  title="Statistics - DawnReaver"
-  description="Detailed clan statistics and performance metrics for DawnReaver."
+  title="Battle Statistics - DawnReaver [DAWN]"
+  description="Comprehensive clan statistics, performance metrics, and leaderboards for DawnReaver."
 >
   <Navigation />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-blue-primary mb-2">Clan Statistics</h1>
-      <p class="text-text-secondary">
-        Comprehensive performance metrics and leaderboards.
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-12 text-center">
+      <h1 class="text-5xl font-display font-bold text-gold-DEFAULT mb-4 glow-gold uppercase">
+        Battle Statistics
+      </h1>
+      <p class="text-steel-light text-xl">
+        Comprehensive Performance Metrics & Combat Leaderboards
       </p>
     </div>
 
     <!-- Overview Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <StatsCard
-        title="Total Members"
-        value={formatNumber(members.length)}
-        subtitle="Active players"
-      />
-      <StatsCard
-        title="Total Battles"
-        value={formatNumber(totalBattles)}
-        subtitle="Across all members"
-      />
-      <StatsCard
-        title="Clan Win Rate"
-        value={formatPercentage(avgWinRate)}
-        subtitle="Average performance"
-      />
-      <StatsCard
-        title="Average PR"
-        value={formatNumber(Math.round(avgPR))}
-        subtitle="Personal rating"
-      />
-    </div>
+    <section class="mb-16">
+      <h2 class="text-3xl font-display font-bold text-cyan-glow mb-8 uppercase text-center">
+        Fleet Overview
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Active Fleet</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(members.length)}</div>
+          <div class="text-text-tertiary text-sm mt-1">Combat Ready</div>
+        </div>
+
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Total Battles</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(totalBattles)}</div>
+          <div class="text-text-tertiary text-sm mt-1">Sorties Deployed</div>
+        </div>
+
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Clan Win Rate</div>
+          <div class="text-4xl font-display font-bold text-cyan-glow glow-cyan">{formatPercentage(avgWinRate)}</div>
+          <div class="text-text-tertiary text-sm mt-1">Victory Ratio</div>
+        </div>
+
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Average PR</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(Math.round(avgPR))}</div>
+          <div class="text-text-tertiary text-sm mt-1">Personal Rating</div>
+        </div>
+      </div>
+    </section>
 
     <!-- Performance Metrics -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <StatsCard
-        title="Average Damage"
-        value={formatNumber(Math.round(avgDamage))}
-        subtitle="Per battle"
-      />
-      <StatsCard
-        title="Average XP"
-        value={formatNumber(Math.round(avgXP))}
-        subtitle="Per battle"
-      />
-      <StatsCard
-        title="Survival Rate"
-        value={formatPercentage(avgSurvivalRate)}
-        subtitle="Average across clan"
-      />
-    </div>
+    <section class="mb-16">
+      <h2 class="text-3xl font-display font-bold text-cyan-glow mb-8 uppercase text-center">
+        Combat Performance
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="steel-panel p-6">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Average Damage</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(Math.round(avgDamage))}</div>
+          <div class="text-text-tertiary text-sm mt-1">Per Battle</div>
+        </div>
+
+        <div class="steel-panel p-6">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Average XP</div>
+          <div class="text-4xl font-display font-bold text-cyan-glow">{formatNumber(Math.round(avgXP))}</div>
+          <div class="text-text-tertiary text-sm mt-1">Per Battle</div>
+        </div>
+
+        <div class="steel-panel p-6">
+          <div class="text-steel-light text-xs uppercase tracking-wider mb-2">Survival Rate</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatPercentage(avgSurvivalRate)}</div>
+          <div class="text-text-tertiary text-sm mt-1">Evasion Success</div>
+        </div>
+      </div>
+    </section>
 
     <!-- Leaderboards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Top by PR -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-blue-primary mb-4">Top 10 by PR</h2>
-        <div class="space-y-2">
-          {topByPR.map((member, index) => (
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-bold text-blue-primary w-6">#{index + 1}</span>
-                <a
-                  href={`/player/${member.account_id}`}
-                  class="text-sm font-medium text-blue-secondary hover:underline"
-                >
-                  {member.nickname}
-                </a>
-              </div>
-              <span class="text-sm font-bold text-text-primary">
-                {formatNumber(member.pr)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+    <section class="mb-16">
+      <h2 class="text-3xl font-display font-bold text-cyan-glow mb-8 uppercase text-center">
+        Top Performers
+      </h2>
 
-      <!-- Top by Win Rate -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-blue-primary mb-4">Top 10 by Win Rate</h2>
-        <div class="space-y-2">
-          {topByWR.map((member, index) => (
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-bold text-blue-primary w-6">#{index + 1}</span>
-                <a
-                  href={`/player/${member.account_id}`}
-                  class="text-sm font-medium text-blue-secondary hover:underline"
-                >
-                  {member.nickname}
-                </a>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Top by PR -->
+        <div class="steel-panel p-6">
+          <h3 class="text-2xl font-display font-bold text-gold-DEFAULT mb-6 uppercase flex items-center gap-3">
+            <span class="text-3xl">🏆</span> Top 10 by PR
+          </h3>
+          <div class="space-y-2">
+            {topByPR.map((member, index) => (
+              <div class="flex items-center justify-between p-3 bg-navy-900/50 border border-navy-700 hover:border-gold-DEFAULT transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-display font-bold text-gold-DEFAULT w-8">#{index + 1}</span>
+                  <a
+                    href={`/player/${member.account_id}`}
+                    class="text-sm font-semibold text-text-primary hover:text-gold-DEFAULT"
+                  >
+                    {member.nickname}
+                  </a>
+                </div>
+                <span class="text-base font-display font-bold text-cyan-glow">
+                  {formatNumber(member.pr)}
+                </span>
               </div>
-              <span class="text-sm font-bold text-text-primary">
-                {formatPercentage(member.win_rate)}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      <!-- Top by Damage -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-blue-primary mb-4">Top 10 by Avg Damage</h2>
-        <div class="space-y-2">
-          {topByDamage.map((member, index) => (
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-bold text-blue-primary w-6">#{index + 1}</span>
-                <a
-                  href={`/player/${member.account_id}`}
-                  class="text-sm font-medium text-blue-secondary hover:underline"
-                >
-                  {member.nickname}
-                </a>
+        <!-- Top by Win Rate -->
+        <div class="steel-panel p-6">
+          <h3 class="text-2xl font-display font-bold text-gold-DEFAULT mb-6 uppercase flex items-center gap-3">
+            <span class="text-3xl">⚡</span> Top 10 by Win Rate
+          </h3>
+          <div class="space-y-2">
+            {topByWR.map((member, index) => (
+              <div class="flex items-center justify-between p-3 bg-navy-900/50 border border-navy-700 hover:border-gold-DEFAULT transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-display font-bold text-gold-DEFAULT w-8">#{index + 1}</span>
+                  <a
+                    href={`/player/${member.account_id}`}
+                    class="text-sm font-semibold text-text-primary hover:text-gold-DEFAULT"
+                  >
+                    {member.nickname}
+                  </a>
+                </div>
+                <span class="text-base font-display font-bold text-cyan-glow">
+                  {formatPercentage(member.win_rate)}
+                </span>
               </div>
-              <span class="text-sm font-bold text-text-primary">
-                {formatNumber(Math.round(member.avg_damage))}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      <!-- Top by Battles -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-blue-primary mb-4">Most Battles</h2>
-        <div class="space-y-2">
-          {topByBattles.map((member, index) => (
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-bold text-blue-primary w-6">#{index + 1}</span>
-                <a
-                  href={`/player/${member.account_id}`}
-                  class="text-sm font-medium text-blue-secondary hover:underline"
-                >
-                  {member.nickname}
-                </a>
+        <!-- Top by Damage -->
+        <div class="steel-panel p-6">
+          <h3 class="text-2xl font-display font-bold text-gold-DEFAULT mb-6 uppercase flex items-center gap-3">
+            <span class="text-3xl">💥</span> Top 10 by Avg Damage
+          </h3>
+          <div class="space-y-2">
+            {topByDamage.map((member, index) => (
+              <div class="flex items-center justify-between p-3 bg-navy-900/50 border border-navy-700 hover:border-gold-DEFAULT transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-display font-bold text-gold-DEFAULT w-8">#{index + 1}</span>
+                  <a
+                    href={`/player/${member.account_id}`}
+                    class="text-sm font-semibold text-text-primary hover:text-gold-DEFAULT"
+                  >
+                    {member.nickname}
+                  </a>
+                </div>
+                <span class="text-base font-display font-bold text-cyan-glow">
+                  {formatNumber(Math.round(member.avg_damage))}
+                </span>
               </div>
-              <span class="text-sm font-bold text-text-primary">
-                {formatNumber(member.battles)}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        <!-- Most Battles -->
+        <div class="steel-panel p-6">
+          <h3 class="text-2xl font-display font-bold text-gold-DEFAULT mb-6 uppercase flex items-center gap-3">
+            <span class="text-3xl">⚓</span> Most Battles
+          </h3>
+          <div class="space-y-2">
+            {topByBattles.map((member, index) => (
+              <div class="flex items-center justify-between p-3 bg-navy-900/50 border border-navy-700 hover:border-gold-DEFAULT transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-display font-bold text-gold-DEFAULT w-8">#{index + 1}</span>
+                  <a
+                    href={`/player/${member.account_id}`}
+                    class="text-sm font-semibold text-text-primary hover:text-gold-DEFAULT"
+                  >
+                    {member.nickname}
+                  </a>
+                </div>
+                <span class="text-base font-display font-bold text-cyan-glow">
+                  {formatNumber(member.battles)}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- Back to Home -->
+    <div class="text-center">
+      <a
+        href="/"
+        class="inline-block steel-panel px-8 py-3 text-gold-DEFAULT font-display font-bold uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300 alert-border"
+      >
+        ← Back to Command Center
+      </a>
     </div>
   </main>
 

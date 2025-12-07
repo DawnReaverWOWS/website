@@ -1,28 +1,177 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
-import MemberTable from '../components/MemberTable.astro';
 import Footer from '../components/Footer.astro';
 import { getMembersWithStats } from '../lib/wargaming-api';
+import { formatNumber, formatPercentage, formatRelativeTime, getPRRating, getRoleDisplayName, getRoleColor } from '../lib/utils';
 
 const members = await getMembersWithStats();
 ---
 
 <BaseLayout
-  title="Members - DawnReaver"
-  description="View the full roster of DawnReaver clan members with detailed statistics."
+  title="Fleet Roster - DawnReaver [DAWN]"
+  description="Complete roster of DawnReaver clan members with detailed battle statistics and performance metrics."
 >
   <Navigation />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-blue-primary mb-2">Clan Members</h1>
-      <p class="text-text-secondary">
-        Complete roster with detailed statistics and performance metrics.
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-12 text-center">
+      <h1 class="text-5xl font-display font-bold text-gold-DEFAULT mb-4 glow-gold uppercase">
+        Fleet Roster
+      </h1>
+      <p class="text-steel-light text-xl">
+        {members.length} Combat-Ready Captains | Full Battle Statistics
       </p>
     </div>
 
-    <MemberTable members={members} />
+    <!-- Members Table - Dark Gaming Theme -->
+    <div class="steel-panel overflow-hidden">
+      <!-- Table Header -->
+      <div class="bg-navy-800 px-6 py-4 border-b border-navy-700 alert-border">
+        <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
+        <p class="text-steel-light text-sm mt-1">{members.length} Members Deployed</p>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-navy-900 border-b-2 border-gold-DEFAULT">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Rank
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Player
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Role
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Battles
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Win Rate
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Avg Damage
+              </th>
+              <th class="px-6 py-4 text-right text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                PR
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                Last Battle
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-navy-800">
+            {members.map((member, index) => {
+              const prRating = getPRRating(member.pr);
+
+              return (
+                <tr class="bg-navy-900/30 hover:bg-navy-800/50 transition-colors border-l-2 border-transparent hover:border-gold-DEFAULT">
+                  <!-- Rank -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-lg font-display font-bold text-gold-DEFAULT">
+                      #{index + 1}
+                    </span>
+                  </td>
+
+                  <!-- Player Name -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <a
+                      href={`/player/${member.account_id}`}
+                      class="text-base font-bold text-text-primary hover:text-gold-DEFAULT hover:glow-gold transition-all"
+                    >
+                      {member.nickname}
+                    </a>
+                  </td>
+
+                  <!-- Role -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-3 py-1 text-xs font-bold rounded uppercase tracking-wider border"
+                      style={`color: ${getRoleColor(member.role)}; border-color: ${getRoleColor(member.role)}; background-color: ${getRoleColor(member.role)}15;`}
+                    >
+                      {getRoleDisplayName(member.role)}
+                    </span>
+                  </td>
+
+                  <!-- Battles -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    {member.hidden_profile ? (
+                      <span class="text-text-tertiary italic text-sm">Hidden</span>
+                    ) : (
+                      <span class="text-base font-mono font-semibold text-text-primary">
+                        {formatNumber(member.battles)}
+                      </span>
+                    )}
+                  </td>
+
+                  <!-- Win Rate -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    {member.hidden_profile ? (
+                      <span class="text-text-tertiary italic text-sm">-</span>
+                    ) : (
+                      <span class="text-lg font-display font-bold text-cyan-glow">
+                        {formatPercentage(member.win_rate)}
+                      </span>
+                    )}
+                  </td>
+
+                  <!-- Avg Damage -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    {member.hidden_profile ? (
+                      <span class="text-text-tertiary italic text-sm">-</span>
+                    ) : (
+                      <span class="text-base font-mono font-semibold text-text-primary">
+                        {formatNumber(Math.round(member.avg_damage))}
+                      </span>
+                    )}
+                  </td>
+
+                  <!-- PR -->
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    {member.hidden_profile ? (
+                      <span class="text-text-tertiary italic text-sm">-</span>
+                    ) : (
+                      <span
+                        class="px-3 py-1 rounded font-display font-bold text-sm text-white border-2"
+                        style={`background-color: ${prRating.color}; border-color: ${prRating.color};`}
+                        title={prRating.label}
+                      >
+                        {formatNumber(member.pr)}
+                      </span>
+                    )}
+                  </td>
+
+                  <!-- Last Battle -->
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-text-tertiary">
+                    {member.last_battle_time ? formatRelativeTime(member.last_battle_time) : '-'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {members.length === 0 && (
+        <div class="px-6 py-16 text-center">
+          <p class="text-text-tertiary text-lg">No members found. Configure your clan ID to display live roster data.</p>
+        </div>
+      )}
+    </div>
+
+    <!-- Back to Home -->
+    <div class="mt-12 text-center">
+      <a
+        href="/"
+        class="inline-block steel-panel px-8 py-3 text-gold-DEFAULT font-display font-bold uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300 alert-border"
+      >
+        ← Back to Command Center
+      </a>
+    </div>
   </main>
 
   <Footer />

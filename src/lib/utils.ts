@@ -78,7 +78,7 @@ export function getWinRateRating(wr: number): { label: string; color: string } {
 export function getRoleDisplayName(role: string): string {
   const roleMap: Record<string, string> = {
     commander: 'Commander',
-    executive_officer: 'Executive Officer',
+    executive_officer: 'Co-Commander',
     recruitment_officer: 'Recruiting Officer',
     commissioned_officer: 'Commissioned Officer',
     officer: 'Line Officer',

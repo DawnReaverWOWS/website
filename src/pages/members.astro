@@ -231,14 +231,14 @@ export const prerender = false;
                   </td>
 
                   <!-- Commendations (Achievement Pins) -->
-                  <td class="px-6 py-4 whitespace-nowrap text-center">
-                    <div class="flex gap-2 flex-wrap justify-center">
+                  <td class="px-2 py-4 text-center min-w-[200px]">
+                    <div class="flex gap-1 justify-center items-center">
                       {member.achievements.length > 0 ? (
                         member.achievements.map(achievementKey => {
                           const pin = ACHIEVEMENT_PINS[achievementKey];
                           return pin ? (
                             <span
-                              class="text-xl cursor-help"
+                              class="text-lg cursor-help flex-shrink-0"
                               style={`color: ${pin.color};`}
                               title={`${pin.name}: ${pin.description}`}
                             >

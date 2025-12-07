@@ -92,6 +92,24 @@ export const botConfig = pgTable('bot_config', {
 });
 
 /**
+ * Announcements/Updates posted from Discord
+ */
+export const announcements = pgTable('announcements', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 255 }).notNull(),
+  content: text('content').notNull(),
+  author: varchar('author', { length: 255 }).notNull(), // Discord username
+  authorDiscordId: varchar('author_discord_id', { length: 255 }).notNull(),
+  category: varchar('category', { length: 50 }).default('general'), // general, clan_battle, event, maintenance
+  isPinned: boolean('is_pinned').default(false),
+  isPublic: boolean('is_public').default(true), // false = members only
+  discordMessageId: varchar('discord_message_id', { length: 255 }), // Original Discord message ID
+  discordChannelId: varchar('discord_channel_id', { length: 255 }), // Channel it was posted in
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+/**
  * Audit log for tracking changes
  */
 export const auditLog = pgTable('audit_log', {
@@ -112,3 +130,5 @@ export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
 export type Application = typeof applications.$inferSelect;
 export type NewApplication = typeof applications.$inferInsert;
+export type Announcement = typeof announcements.$inferSelect;
+export type NewAnnouncement = typeof announcements.$inferInsert;

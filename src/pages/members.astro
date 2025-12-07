@@ -7,19 +7,23 @@ import { formatNumber, formatPercentage, formatRelativeTime, getPRRating, getRol
 
 const members = await getMembersWithStats();
 
-// Sort members by role hierarchy first (Commander -> Enlisted)
-const roleOrder: Record<string, number> = {
-  commander: 1,
-  executive_officer: 2,
-  recruitment_officer: 3,
-  commissioned_officer: 4,
-  officer: 5,
-  private: 6,
-};
+// Role hierarchy for sorting (Commander -> Enlisted)
+function getRoleOrder(role: string): number {
+  const order: Record<string, number> = {
+    commander: 1,
+    executive_officer: 2,
+    recruitment_officer: 3,
+    commissioned_officer: 4,
+    officer: 5,
+    private: 6,
+  };
+  return order[role] || 999;
+}
 
+// Sort members by role hierarchy first
 members.sort((a, b) => {
-  const aOrder = roleOrder[a.role] || 999;
-  const bOrder = roleOrder[b.role] || 999;
+  const aOrder = getRoleOrder(a.role);
+  const bOrder = getRoleOrder(b.role);
   return aOrder - bOrder;
 });
 ---
@@ -116,7 +120,7 @@ members.sort((a, b) => {
                 <tr
                   class="bg-navy-900/30 hover:bg-navy-800/50 transition-colors border-l-2 border-transparent hover:border-gold-DEFAULT"
                   data-nickname={member.nickname}
-                  data-role={roleOrder[member.role] || 999}
+                  data-role={getRoleOrder(member.role)}
                   data-battles={member.battles}
                   data-win-rate={member.win_rate}
                   data-avg-damage={member.avg_damage}

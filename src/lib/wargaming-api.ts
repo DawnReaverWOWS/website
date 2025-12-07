@@ -86,16 +86,15 @@ export async function getClanMembers(): Promise<ClanMember[]> {
     { clan_id: CLAN_ID, extra: 'members' }
   );
 
-  if (!data || !data[CLAN_ID] || !data[CLAN_ID].members_ids) {
+  if (!data || !data[CLAN_ID] || !data[CLAN_ID].members) {
     return [];
   }
 
-  // Convert members_ids to ClanMember format
-  const accountIds = Object.keys(data[CLAN_ID].members_ids);
-  const members: ClanMember[] = accountIds.map((accountId) => {
-    const memberData = data[CLAN_ID].members_ids[accountId];
+  // Convert members object to ClanMember array
+  const membersData = data[CLAN_ID].members;
+  const members: ClanMember[] = Object.values(membersData).map((memberData: any) => {
     return {
-      account_id: parseInt(accountId),
+      account_id: memberData.account_id,
       joined_at: memberData.joined_at,
       role: memberData.role,
     };

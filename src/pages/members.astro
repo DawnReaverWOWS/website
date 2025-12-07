@@ -173,7 +173,7 @@ memberAchievements.sort((a, b) => {
                 >
                   <!-- Rank -->
                   <td class="rank-cell px-6 py-4 whitespace-nowrap">
-                    <span class="text-lg font-display font-bold text-gold-DEFAULT">
+                    <span class="rank-number text-lg font-display font-bold text-gold-DEFAULT">
                       #{index + 1}
                     </span>
                   </td>
@@ -381,12 +381,9 @@ memberAchievements.sort((a, b) => {
       tbody.innerHTML = '';
       rows.forEach((row, index) => {
         // Update rank numbers
-        const rankCell = row.querySelector('.rank-cell');
-        if (rankCell) {
-          const rankSpan = rankCell.querySelector('span');
-          if (rankSpan) {
-            rankSpan.textContent = `#${index + 1}`;
-          }
+        const rankNumber = row.querySelector('.rank-number');
+        if (rankNumber) {
+          rankNumber.textContent = `#${index + 1}`;
         }
         tbody.appendChild(row);
       });

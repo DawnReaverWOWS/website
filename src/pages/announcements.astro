@@ -6,6 +6,8 @@ import { db } from '../db';
 import { announcements } from '../db/schema';
 import { desc, eq } from 'drizzle-orm';
 
+export const prerender = false;
+
 // Fetch public announcements
 const publicAnnouncements = await db.select()
   .from(announcements)

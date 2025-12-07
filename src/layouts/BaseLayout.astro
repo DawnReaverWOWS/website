@@ -32,7 +32,12 @@ const { title, description = 'DawnReaver - Professional World of Warships Gaming
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
   </head>
-  <body class="bg-gray-50 text-text-primary min-h-screen">
-    <slot />
+  <body class="bg-navy-950 text-text-primary min-h-screen relative overflow-x-hidden">
+    <!-- Optional: Dark grid pattern overlay for gaming aesthetic -->
+    <div class="fixed inset-0 pointer-events-none opacity-5" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+    <div class="relative z-10">
+      <slot />
+    </div>
   </body>
 </html>

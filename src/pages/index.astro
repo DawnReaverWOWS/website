@@ -1,147 +1,307 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
-import ClanHeader from '../components/ClanHeader.astro';
-import StatsCard from '../components/StatsCard.astro';
 import Footer from '../components/Footer.astro';
 import { getClanInfo, getMembersWithStats } from '../lib/wargaming-api';
 import { formatNumber, formatPercentage } from '../lib/utils';
 
-// Fetch clan data
 const clan = await getClanInfo();
 const members = await getMembersWithStats();
 
-// Calculate aggregate stats
 const totalBattles = members.reduce((sum, m) => sum + m.battles, 0);
 const avgWinRate = members.length > 0
   ? members.reduce((sum, m) => sum + m.win_rate, 0) / members.length
   : 0;
-const avgDamage = members.length > 0
-  ? members.reduce((sum, m) => sum + m.avg_damage, 0) / members.length
-  : 0;
-
-// Top performers
 const topPerformers = members.slice(0, 5);
 ---
 
 <BaseLayout
-  title="DawnReaver - Elite World of Warships Clan"
-  description="DawnReaver is an elite World of Warships clan focused on competitive gameplay and community excellence."
+  title="DawnReaver [DAWN] - Elite WoWS Clan"
+  description="DawnReaver - Elite World of Warships clan. Join our fleet for competitive clan battles, tactical gameplay, and naval supremacy."
 >
   <Navigation />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {clan && clan.emblems ? (
-      <ClanHeader clan={clan} />
-    ) : (
-      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-        <h1 class="text-4xl font-bold text-blue-primary mb-2">
-          DawnReaver <span class="text-gold-DEFAULT">[DAWN]</span>
+  <!-- HERO BANNER - Full width warship imagery -->
+  <section class="relative h-[600px] flex items-center justify-center overflow-hidden">
+    <!-- Background Image (placeholder - you can replace with actual warship image) -->
+    <div class="absolute inset-0 bg-gradient-to-b from-navy-900 via-navy-800 to-navy-950">
+      <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1574680796665-4d71f49b1f7c?w=1920'); background-size: cover; background-position: center;"></div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent"></div>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 text-center px-4">
+      <div class="mb-6">
+        <div class="text-gold-DEFAULT text-8xl font-display font-bold glow-gold tracking-wider">
+          [DAWN]
+        </div>
+        <h1 class="text-6xl font-display font-bold text-text-primary mt-4 tracking-wide">
+          DAWNREAVER
         </h1>
-        <p class="text-text-secondary">Elite World of Warships Gaming Clan</p>
-        <p class="text-sm text-text-tertiary mt-4">
-          Configure your clan ID in the .env file to display live data from the Wargaming API.
-        </p>
       </div>
-    )}
 
-    <!-- Clan Stats Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <StatsCard
-        title="Total Battles"
-        value={formatNumber(totalBattles)}
-        subtitle="Across all members"
-        icon="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-      <StatsCard
-        title="Average Win Rate"
-        value={formatPercentage(avgWinRate)}
-        subtitle="Clan performance"
-        icon="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-      />
-      <StatsCard
-        title="Average Damage"
-        value={formatNumber(Math.round(avgDamage))}
-        subtitle="Per battle"
-        icon="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-      />
+      <p class="text-steel-light text-2xl font-semibold uppercase tracking-widest mb-8">
+        Naval Superiority | Clan Battles | Tactical Excellence
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/members"
+          class="steel-panel px-8 py-4 text-gold-DEFAULT font-bold text-lg uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300 alert-border"
+        >
+          View Roster
+        </a>
+        <a
+          href="#recruitment"
+          class="steel-panel px-8 py-4 text-cyan-glow font-bold text-lg uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all duration-300"
+        >
+          Join the Fleet
+        </a>
+      </div>
     </div>
 
-    <!-- About Section -->
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-      <h2 class="text-2xl font-bold text-blue-primary mb-4">About DawnReaver</h2>
-      <p class="text-text-primary leading-relaxed mb-4">
-        Welcome to DawnReaver, an elite World of Warships clan dedicated to competitive gameplay,
-        strategic excellence, and community engagement. We maintain the highest standards of skill
-        and sportsmanship while fostering a welcoming environment for passionate players.
-      </p>
-      <p class="text-text-primary leading-relaxed">
-        Our members are committed to continuous improvement, tactical coordination, and achieving
-        victory through teamwork. Whether in clan battles, ranked seasons, or casual divisions,
-        DawnReaver represents excellence on the high seas.
-      </p>
-    </div>
+    <!-- Scan line effect -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-glow to-transparent opacity-50 animate-pulse"></div>
+  </section>
 
-    <!-- Top Performers -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- CLAN OVERVIEW SECTION -->
+    <section class="mb-16">
+      <h2 class="text-4xl font-display font-bold text-gold-DEFAULT mb-8 text-center glow-gold">
+        FLEET COMMAND CENTER
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <!-- Stat Card 1 -->
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-sm uppercase tracking-wider mb-2">Total Battles</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(totalBattles)}</div>
+          <div class="text-text-tertiary text-sm mt-2">Across all members</div>
+        </div>
+
+        <!-- Stat Card 2 -->
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-sm uppercase tracking-wider mb-2">Win Rate</div>
+          <div class="text-4xl font-display font-bold text-cyan-glow glow-cyan">{formatPercentage(avgWinRate)}</div>
+          <div class="text-text-tertiary text-sm mt-2">Clan performance</div>
+        </div>
+
+        <!-- Stat Card 3 -->
+        <div class="steel-panel p-6 alert-border">
+          <div class="text-steel-light text-sm uppercase tracking-wider mb-2">Active Fleet</div>
+          <div class="text-4xl font-display font-bold text-gold-DEFAULT">{formatNumber(members.length)}</div>
+          <div class="text-text-tertiary text-sm mt-2">Combat ready</div>
+        </div>
+      </div>
+
+      <!-- Mission Statement -->
+      <div class="steel-panel p-8 mb-8">
+        <h3 class="text-2xl font-display font-bold text-gold-DEFAULT mb-4 uppercase">Our Mission</h3>
+        <p class="text-text-secondary text-lg leading-relaxed">
+          DawnReaver is an elite World of Warships clan dedicated to <span class="text-gold-DEFAULT font-semibold">competitive clan battles</span>,
+          strategic naval warfare, and tactical excellence. We maintain the highest standards of skill, communication, and teamwork
+          while fostering a tight-knit community of dedicated captains. Whether pushing for <span class="text-cyan-glow font-semibold">Typhoon League</span>
+          or coordinating precision strikes, DawnReaver represents naval supremacy on the high seas.
+        </p>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-gold-DEFAULT rounded-full"></div>
+            <span class="text-text-primary font-semibold">Server: NA</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-cyan-glow rounded-full"></div>
+            <span class="text-text-primary font-semibold">Focus: Clan Battles</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-red-alert rounded-full"></div>
+            <span class="text-text-primary font-semibold">Competitive</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP PERFORMERS LEADERBOARD -->
     {topPerformers.length > 0 && (
-      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-        <h2 class="text-2xl font-bold text-blue-primary mb-6">Top Performers</h2>
-        <div class="space-y-4">
-          {topPerformers.map((member, index) => (
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div class="flex items-center gap-4">
-                <div class="text-2xl font-bold text-blue-primary w-8">
-                  #{index + 1}
-                </div>
-                <div>
-                  <a
-                    href={`/player/${member.account_id}`}
-                    class="text-lg font-medium text-blue-secondary hover:text-blue-primary hover:underline"
-                  >
-                    {member.nickname}
-                  </a>
-                  <div class="text-sm text-text-tertiary">
-                    {formatNumber(member.battles)} battles
+      <section class="mb-16">
+        <h2 class="text-4xl font-display font-bold text-gold-DEFAULT mb-8 text-center glow-gold">
+          TOP GUNS
+        </h2>
+
+        <div class="steel-panel p-8">
+          <div class="space-y-4">
+            {topPerformers.map((member, index) => (
+              <div class="flex items-center justify-between p-4 bg-navy-900/50 border border-navy-700 hover:border-gold-DEFAULT transition-all duration-300">
+                <div class="flex items-center gap-4">
+                  <div class="text-3xl font-display font-bold text-gold-DEFAULT w-12">
+                    #{index + 1}
+                  </div>
+                  <div>
+                    <a
+                      href={`/player/${member.account_id}`}
+                      class="text-xl font-bold text-text-primary hover:text-gold-DEFAULT transition-colors"
+                    >
+                      {member.nickname}
+                    </a>
+                    <div class="text-sm text-text-tertiary">
+                      {formatNumber(member.battles)} battles deployed
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="text-right">
-                <div class="text-lg font-bold text-text-primary">
-                  {formatPercentage(member.win_rate)}
-                </div>
-                <div class="text-sm text-text-tertiary">
-                  Win Rate
+                <div class="text-right">
+                  <div class="text-2xl font-display font-bold text-cyan-glow">
+                    {formatPercentage(member.win_rate)}
+                  </div>
+                  <div class="text-xs text-steel-light uppercase tracking-wider">Win Rate</div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div class="mt-8 text-center">
+            <a
+              href="/members"
+              class="inline-block steel-panel px-8 py-3 text-gold-DEFAULT font-bold uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300 alert-border"
+            >
+              Full Roster →
+            </a>
+          </div>
         </div>
-        <div class="mt-6 text-center">
-          <a
-            href="/members"
-            class="inline-block bg-blue-primary hover:bg-blue-secondary text-white font-bold py-3 px-8 rounded-lg transition-colors"
-          >
-            View All Members
-          </a>
-        </div>
-      </div>
+      </section>
     )}
 
-    <!-- Call to Action -->
-    <div class="bg-gradient-to-r from-blue-primary to-blue-secondary rounded-lg shadow-lg p-8 text-center text-white">
-      <h2 class="text-3xl font-bold mb-4">Ready to Join the Fleet?</h2>
-      <p class="text-blue-light text-lg mb-6">
-        DawnReaver is always looking for skilled and dedicated captains to join our ranks.
+    <!-- RECRUITMENT SECTION -->
+    <section id="recruitment" class="mb-16">
+      <h2 class="text-4xl font-display font-bold text-gold-DEFAULT mb-8 text-center glow-gold">
+        JOIN THE FLEET
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Requirements -->
+        <div class="steel-panel p-8 alert-border">
+          <h3 class="text-2xl font-display font-bold text-cyan-glow mb-6 uppercase">Requirements</h3>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <span class="text-gold-DEFAULT text-xl">▸</span>
+              <div>
+                <div class="font-bold text-text-primary">Minimum Stats</div>
+                <div class="text-text-secondary">55%+ Win Rate | 1500+ PR</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-gold-DEFAULT text-xl">▸</span>
+              <div>
+                <div class="font-bold text-text-primary">Ship Requirements</div>
+                <div class="text-text-secondary">3+ Tier X ships (DD/CA priority)</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-gold-DEFAULT text-xl">▸</span>
+              <div>
+                <div class="font-bold text-text-primary">Communication</div>
+                <div class="text-text-secondary">Discord required | Mic mandatory for CB</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-gold-DEFAULT text-xl">▸</span>
+              <div>
+                <div class="font-bold text-text-primary">Availability</div>
+                <div class="text-text-secondary">Clan Battles: 8PM EST Mon/Wed/Fri</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-gold-DEFAULT text-xl">▸</span>
+              <div>
+                <div class="font-bold text-text-primary">Attitude</div>
+                <div class="text-text-secondary">Competitive mindset, team-first mentality</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Application Process -->
+        <div class="steel-panel p-8">
+          <h3 class="text-2xl font-display font-bold text-cyan-glow mb-6 uppercase">How to Apply</h3>
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="steel-panel w-10 h-10 flex items-center justify-center font-display font-bold text-gold-DEFAULT alert-border">
+                1
+              </div>
+              <div>
+                <div class="font-bold text-text-primary mb-1">Join Our Discord</div>
+                <div class="text-text-secondary">Click the button below to join our Discord server</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="steel-panel w-10 h-10 flex items-center justify-center font-display font-bold text-gold-DEFAULT alert-border">
+                2
+              </div>
+              <div>
+                <div class="font-bold text-text-primary mb-1">Post in #recruitment</div>
+                <div class="text-text-secondary">Include your IGN, stats, and availability</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="steel-panel w-10 h-10 flex items-center justify-center font-display font-bold text-gold-DEFAULT alert-border">
+                3
+              </div>
+              <div>
+                <div class="font-bold text-text-primary mb-1">Interview</div>
+                <div class="text-text-secondary">Brief voice chat with officer staff</div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="steel-panel w-10 h-10 flex items-center justify-center font-display font-bold text-gold-DEFAULT alert-border">
+                4
+              </div>
+              <div>
+                <div class="font-bold text-text-primary mb-1">Trial Period</div>
+                <div class="text-text-secondary">2-week evaluation, participate in CBs</div>
+              </div>
+            </div>
+
+            <div class="mt-8">
+              <a
+                href={clan ? `https://clans.worldofwarships.com/clans/profile/${clan.clan_id}/` : '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block w-full text-center steel-panel px-8 py-4 text-cyan-glow font-display font-bold text-lg uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all duration-300"
+              >
+                Apply Now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="text-center steel-panel p-12 alert-border">
+      <h2 class="text-5xl font-display font-bold text-gold-DEFAULT glow-gold mb-4">
+        READY FOR BATTLE?
+      </h2>
+      <p class="text-steel-light text-xl mb-8">
+        Join DawnReaver and dominate the seas with the best tactical minds in World of Warships.
       </p>
-      <a
-        href={clan ? `https://clans.worldofwarships.com/clans/profile/${clan.clan_id}/` : '#'}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block bg-gold-DEFAULT hover:bg-gold-dark text-blue-primary font-bold py-3 px-8 rounded-lg transition-colors shadow-lg"
-      >
-        Apply Now
-      </a>
-    </div>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/members"
+          class="steel-panel px-8 py-4 text-gold-DEFAULT font-display font-bold uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300"
+        >
+          View Our Fleet
+        </a>
+        <a
+          href="/stats"
+          class="steel-panel px-8 py-4 text-cyan-glow font-display font-bold uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all duration-300"
+        >
+          Battle Statistics
+        </a>
+      </div>
+    </section>
   </main>
 
   <Footer />

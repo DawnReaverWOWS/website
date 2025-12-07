@@ -1,56 +1,148 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import ClanHeader from '../components/ClanHeader.astro';
+import StatsCard from '../components/StatsCard.astro';
+import Footer from '../components/Footer.astro';
+import { getClanInfo, getMembersWithStats } from '../lib/wargaming-api';
+import { formatNumber, formatPercentage } from '../lib/utils';
+
+// Fetch clan data
+const clan = await getClanInfo();
+const members = await getMembersWithStats();
+
+// Calculate aggregate stats
+const totalBattles = members.reduce((sum, m) => sum + m.battles, 0);
+const avgWinRate = members.length > 0
+  ? members.reduce((sum, m) => sum + m.win_rate, 0) / members.length
+  : 0;
+const avgDamage = members.length > 0
+  ? members.reduce((sum, m) => sum + m.avg_damage, 0) / members.length
+  : 0;
+
+// Top performers
+const topPerformers = members.slice(0, 5);
 ---
 
-<BaseLayout title="DawnReaver - World of Warships Clan">
-  <main class="container mx-auto px-4 py-16">
-    <!-- Hero Section -->
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-6xl font-bold mb-4">
-        <span class="text-gold">Dawn</span><span class="text-text-primary">Reaver</span>
-      </h1>
+<BaseLayout
+  title="DawnReaver - Elite World of Warships Clan"
+  description="DawnReaver is an elite World of Warships clan focused on competitive gameplay and community excellence."
+>
+  <Navigation />
 
-      <p class="text-2xl text-text-secondary mb-8 font-mono">
-        World of Warships Gaming Clan
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {clan && clan.emblems ? (
+      <ClanHeader clan={clan} />
+    ) : (
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h1 class="text-4xl font-bold text-blue-primary mb-2">
+          DawnReaver <span class="text-gold-DEFAULT">[DAWN]</span>
+        </h1>
+        <p class="text-text-secondary">Elite World of Warships Gaming Clan</p>
+        <p class="text-sm text-text-tertiary mt-4">
+          Configure your clan ID in the .env file to display live data from the Wargaming API.
+        </p>
+      </div>
+    )}
+
+    <!-- Clan Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <StatsCard
+        title="Total Battles"
+        value={formatNumber(totalBattles)}
+        subtitle="Across all members"
+        icon="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+      <StatsCard
+        title="Average Win Rate"
+        value={formatPercentage(avgWinRate)}
+        subtitle="Clan performance"
+        icon="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+      />
+      <StatsCard
+        title="Average Damage"
+        value={formatNumber(Math.round(avgDamage))}
+        subtitle="Per battle"
+        icon="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+      />
+    </div>
+
+    <!-- About Section -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-blue-primary mb-4">About DawnReaver</h2>
+      <p class="text-text-primary leading-relaxed mb-4">
+        Welcome to DawnReaver, an elite World of Warships clan dedicated to competitive gameplay,
+        strategic excellence, and community engagement. We maintain the highest standards of skill
+        and sportsmanship while fostering a welcoming environment for passionate players.
       </p>
+      <p class="text-text-primary leading-relaxed">
+        Our members are committed to continuous improvement, tactical coordination, and achieving
+        victory through teamwork. Whether in clan battles, ranked seasons, or casual divisions,
+        DawnReaver represents excellence on the high seas.
+      </p>
+    </div>
 
-      <div class="h-px bg-navy-800 my-12"></div>
-
-      <!-- Status Card -->
-      <div class="bg-navy-900 border border-navy-800 rounded-lg p-8 max-w-md mx-auto">
-        <div class="mb-4">
-          <div class="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full">
-            <span class="text-gold font-semibold text-sm uppercase tracking-wide">
-              ✓ Setup Successful
-            </span>
-          </div>
+    <!-- Top Performers -->
+    {topPerformers.length > 0 && (
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-blue-primary mb-6">Top Performers</h2>
+        <div class="space-y-4">
+          {topPerformers.map((member, index) => (
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="text-2xl font-bold text-blue-primary w-8">
+                  #{index + 1}
+                </div>
+                <div>
+                  <a
+                    href={`/player/${member.account_id}`}
+                    class="text-lg font-medium text-blue-secondary hover:text-blue-primary hover:underline"
+                  >
+                    {member.nickname}
+                  </a>
+                  <div class="text-sm text-text-tertiary">
+                    {formatNumber(member.battles)} battles
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold text-text-primary">
+                  {formatPercentage(member.win_rate)}
+                </div>
+                <div class="text-sm text-text-tertiary">
+                  Win Rate
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-
-        <h2 class="text-xl font-semibold mb-4 text-text-primary">
-          Project Initialized
-        </h2>
-
-        <ul class="text-left text-text-secondary space-y-2 text-sm">
-          <li class="flex items-center gap-2">
-            <span class="text-gold">▸</span> Astro 4.x + TypeScript
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-gold">▸</span> Tailwind CSS v4
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-gold">▸</span> Vercel Deployment Ready
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-gold">▸</span> Dark Theme Configured
-          </li>
-        </ul>
+        <div class="mt-6 text-center">
+          <a
+            href="/members"
+            class="inline-block bg-blue-primary hover:bg-blue-secondary text-white font-bold py-3 px-8 rounded-lg transition-colors"
+          >
+            View All Members
+          </a>
+        </div>
       </div>
+    )}
 
-      <!-- Coming Soon Section -->
-      <div class="mt-16 text-text-tertiary text-sm">
-        <p>🚧 Website under construction</p>
-        <p class="mt-2">Features coming soon: Member roster, Statistics, Recruitment info</p>
-      </div>
+    <!-- Call to Action -->
+    <div class="bg-gradient-to-r from-blue-primary to-blue-secondary rounded-lg shadow-lg p-8 text-center text-white">
+      <h2 class="text-3xl font-bold mb-4">Ready to Join the Fleet?</h2>
+      <p class="text-blue-light text-lg mb-6">
+        DawnReaver is always looking for skilled and dedicated captains to join our ranks.
+      </p>
+      <a
+        href={clan ? `https://clans.worldofwarships.com/clans/profile/${clan.clan_id}/` : '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block bg-gold-DEFAULT hover:bg-gold-dark text-blue-primary font-bold py-3 px-8 rounded-lg transition-colors shadow-lg"
+      >
+        Apply Now
+      </a>
     </div>
   </main>
+
+  <Footer />
 </BaseLayout>

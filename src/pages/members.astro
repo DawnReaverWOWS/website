@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import MemberTable from '../components/MemberTable.astro';
+import Footer from '../components/Footer.astro';
+import { getMembersWithStats } from '../lib/wargaming-api';
+
+const members = await getMembersWithStats();
+---
+
+<BaseLayout
+  title="Members - DawnReaver"
+  description="View the full roster of DawnReaver clan members with detailed statistics."
+>
+  <Navigation />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-blue-primary mb-2">Clan Members</h1>
+      <p class="text-text-secondary">
+        Complete roster with detailed statistics and performance metrics.
+      </p>
+    </div>
+
+    <MemberTable members={members} />
+  </main>
+
+  <Footer />
+</BaseLayout>

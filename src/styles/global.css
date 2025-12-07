@@ -3,25 +3,31 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
 
-/* Custom CSS Variables - DawnReaver Dark Theme */
+/* Custom CSS Variables - DawnReaver White/Blue/Gold Theme */
 @theme {
   /* Background Colors */
-  --color-navy-950: #0a1929;
-  --color-navy-900: #1e293b;
-  --color-navy-800: #334155;
-  --color-navy-700: #475569;
+  --color-white: #ffffff;
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+
+  /* Blue Colors */
+  --color-blue-primary: #003366;
+  --color-blue-secondary: #0055aa;
+  --color-blue-light: #1e88e5;
+  --color-blue-dark: #002244;
 
   /* Accent Colors */
-  --color-gold-DEFAULT: #d4af37;
-  --color-gold-dark: #b8941f;
-  --color-silver-DEFAULT: #c0c0c0;
-  --color-bronze-DEFAULT: #cd7f32;
-  --color-bronze-dark: #b8722c;
+  --color-gold-DEFAULT: #ffd700;
+  --color-gold-dark: #d4af37;
+  --color-gold-light: #ffe44d;
 
   /* Text Colors */
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-tertiary: #64748b;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #718096;
+  --color-text-white: #ffffff;
 
   /* Font Families */
   --font-family-sans: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -46,6 +52,6 @@ html {
 
 /* Selection color */
 ::selection {
-  background-color: rgba(212, 175, 55, 0.3);
-  color: #f1f5f9;
+  background-color: rgba(255, 215, 0, 0.3);
+  color: #003366;
 }

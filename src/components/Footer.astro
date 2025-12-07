@@ -1,0 +1,75 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-blue-primary text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- About -->
+      <div>
+        <h3 class="text-gold-DEFAULT text-lg font-bold mb-4">DawnReaver</h3>
+        <p class="text-blue-light text-sm">
+          Elite World of Warships clan dedicated to competitive gameplay and community excellence.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-gold-DEFAULT text-lg font-bold mb-4">Quick Links</h3>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a href="/" class="text-blue-light hover:text-gold-light transition-colors">
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="/members" class="text-blue-light hover:text-gold-light transition-colors">
+              Members
+            </a>
+          </li>
+          <li>
+            <a href="/stats" class="text-blue-light hover:text-gold-light transition-colors">
+              Statistics
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- External Links -->
+      <div>
+        <h3 class="text-gold-DEFAULT text-lg font-bold mb-4">Connect</h3>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a
+              href="https://worldofwarships.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-light hover:text-gold-light transition-colors"
+            >
+              World of Warships
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://na.wows-numbers.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-light hover:text-gold-light transition-colors"
+            >
+              WoWS Numbers
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-blue-secondary mt-8 pt-8 text-center text-sm text-blue-light">
+      <p>
+        &copy; {currentYear} DawnReaver. All rights reserved.
+      </p>
+      <p class="mt-2 text-xs">
+        This site is not affiliated with Wargaming.net. World of Warships is a trademark of Wargaming.net.
+      </p>
+    </div>
+  </div>
+</footer>

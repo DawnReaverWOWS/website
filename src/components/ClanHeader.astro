@@ -1,0 +1,53 @@
+---
+import type { ClanInfo } from '../lib/types';
+import { formatNumber, formatDate } from '../lib/utils';
+
+interface Props {
+  clan: ClanInfo;
+}
+
+const { clan } = Astro.props;
+---
+
+<div class="bg-white rounded-lg shadow-lg p-8 mb-8 border-t-4 border-gold-DEFAULT">
+  <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+    <!-- Clan Emblem -->
+    <div class="flex-shrink-0">
+      <img
+        src={clan.emblems.large}
+        alt={`${clan.tag} emblem`}
+        class="w-32 h-32 rounded-lg shadow-md"
+      />
+    </div>
+
+    <!-- Clan Info -->
+    <div class="flex-1 text-center md:text-left">
+      <h1 class="text-4xl font-bold text-blue-primary mb-2">
+        {clan.name}
+        <span class="text-gold-DEFAULT">[{clan.tag}]</span>
+      </h1>
+
+      <div class="flex flex-wrap justify-center md:justify-start gap-4 text-text-secondary mb-4">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+          </svg>
+          <span class="font-medium">{formatNumber(clan.members_count)} Members</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+          </svg>
+          <span>Est. {formatDate(clan.created_at)}</span>
+        </div>
+      </div>
+
+      {clan.description && (
+        <p class="text-text-primary text-lg max-w-2xl">
+          {clan.description}
+        </p>
+      )}
+    </div>
+  </div>
+</div>

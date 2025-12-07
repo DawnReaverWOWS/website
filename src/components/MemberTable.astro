@@ -1,0 +1,141 @@
+---
+import type { MemberWithStats } from '../lib/types';
+import { formatNumber, formatPercentage, formatRelativeTime, getPRRating, getRoleDisplayName, getRoleColor } from '../lib/utils';
+
+interface Props {
+  members: MemberWithStats[];
+}
+
+const { members } = Astro.props;
+---
+
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Table Header -->
+  <div class="bg-blue-primary text-white px-6 py-4">
+    <h2 class="text-2xl font-bold">Clan Roster</h2>
+    <p class="text-blue-light text-sm mt-1">{members.length} Active Members</p>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-100 border-b-2 border-blue-primary">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Rank
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Player
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Role
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Battles
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Win Rate
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Avg Damage
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+            PR
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+            Last Battle
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {members.map((member, index) => {
+          const prRating = getPRRating(member.pr);
+
+          return (
+            <tr class="hover:bg-gray-50 transition-colors">
+              <!-- Rank -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                #{index + 1}
+              </td>
+
+              <!-- Player Name -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <a
+                  href={`/player/${member.account_id}`}
+                  class="text-sm font-medium text-blue-secondary hover:text-blue-primary hover:underline"
+                >
+                  {member.nickname}
+                </a>
+              </td>
+
+              <!-- Role -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  class="px-2 py-1 text-xs font-semibold rounded"
+                  style={`color: ${getRoleColor(member.role)}; background-color: ${getRoleColor(member.role)}20;`}
+                >
+                  {getRoleDisplayName(member.role)}
+                </span>
+              </td>
+
+              <!-- Battles -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-text-primary">
+                {member.hidden_profile ? (
+                  <span class="text-text-tertiary italic">Hidden</span>
+                ) : (
+                  formatNumber(member.battles)
+                )}
+              </td>
+
+              <!-- Win Rate -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                {member.hidden_profile ? (
+                  <span class="text-text-tertiary italic">-</span>
+                ) : (
+                  <span class="font-medium text-text-primary">
+                    {formatPercentage(member.win_rate)}
+                  </span>
+                )}
+              </td>
+
+              <!-- Avg Damage -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-text-primary">
+                {member.hidden_profile ? (
+                  <span class="text-text-tertiary italic">-</span>
+                ) : (
+                  formatNumber(Math.round(member.avg_damage))
+                )}
+              </td>
+
+              <!-- PR -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                {member.hidden_profile ? (
+                  <span class="text-text-tertiary italic">-</span>
+                ) : (
+                  <span
+                    class="px-2 py-1 rounded font-bold text-white text-xs"
+                    style={`background-color: ${prRating.color};`}
+                    title={prRating.label}
+                  >
+                    {formatNumber(member.pr)}
+                  </span>
+                )}
+              </td>
+
+              <!-- Last Battle -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                {member.last_battle_time ? formatRelativeTime(member.last_battle_time) : '-'}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+
+  {members.length === 0 && (
+    <div class="px-6 py-12 text-center text-text-tertiary">
+      <p>No members found.</p>
+    </div>
+  )}
+</div>

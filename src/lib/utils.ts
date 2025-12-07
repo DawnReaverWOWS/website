@@ -78,9 +78,11 @@ export function getWinRateRating(wr: number): { label: string; color: string } {
 export function getRoleDisplayName(role: string): string {
   const roleMap: Record<string, string> = {
     commander: 'Commander',
-    executive_officer: 'Executive Officer',
-    officer: 'Officer',
-    private: 'Member',
+    executive_officer: 'Deputy Commander',
+    commissioned_officer: 'Commissioned Officer',
+    recruitment_officer: 'Recruitment Officer',
+    officer: 'Petty Officer',
+    private: 'Seaman',
   };
   return roleMap[role] || role;
 }
@@ -90,10 +92,12 @@ export function getRoleDisplayName(role: string): string {
  */
 export function getRoleColor(role: string): string {
   const colorMap: Record<string, string> = {
-    commander: '#FFD700',
-    executive_officer: '#D4AF37',
-    officer: '#0055AA',
-    private: '#718096',
+    commander: '#FFD700',           // Gold
+    executive_officer: '#FFA500',   // Orange
+    commissioned_officer: '#00D9FF', // Cyan
+    recruitment_officer: '#9B59B6',  // Purple
+    officer: '#0055AA',              // Blue
+    private: '#8B9CB6',              // Steel gray
   };
-  return colorMap[role] || '#718096';
+  return colorMap[role] || '#8B9CB6';
 }

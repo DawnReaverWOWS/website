@@ -206,8 +206,29 @@ export async function getMembersWithStats(): Promise<MemberWithStats[]> {
     };
   });
 
-  // Sort by PR (descending)
-  return membersWithStats.sort((a, b) => b.pr - a.pr);
+  // Define role hierarchy (lower number = higher rank)
+  const roleOrder: Record<string, number> = {
+    'commander': 0,
+    'executive_officer': 1,
+    'commissioned_officer': 2,
+    'recruitment_officer': 3,
+    'officer': 4,
+    'private': 5,
+  };
+
+  // Sort by role first, then by PR within each role
+  return membersWithStats.sort((a, b) => {
+    const roleA = roleOrder[a.role] ?? 999;
+    const roleB = roleOrder[b.role] ?? 999;
+
+    // If roles are different, sort by role
+    if (roleA !== roleB) {
+      return roleA - roleB;
+    }
+
+    // If same role, sort by PR (descending)
+    return b.pr - a.pr;
+  });
 }
 
 /**

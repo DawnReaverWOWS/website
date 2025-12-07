@@ -77,15 +77,18 @@ memberAchievements.sort((a, b) => {
     </div>
 
 
-    <!-- Members Table - Dark Gaming Theme -->
-    <!-- Table Header -->
-    <div class="mb-4">
-      <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
-      <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
-    </div>
+    <!-- Grid Layout: Table + Legend Sidebar -->
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
+      <!-- Left Column: Members Table -->
+      <div class="min-w-0">
+        <!-- Table Header -->
+        <div class="mb-4">
+          <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
+          <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
+        </div>
 
-    <!-- Table -->
-    <div class="overflow-x-auto">
+        <!-- Table -->
+        <div class="overflow-x-auto">
         <table class="w-full" id="member-table">
           <thead class="bg-navy-900 border-b-2 border-gold-DEFAULT">
             <tr>
@@ -290,11 +293,73 @@ memberAchievements.sort((a, b) => {
         </table>
       </div>
 
-      {members.length === 0 && (
-        <div class="px-6 py-16 text-center">
-          <p class="text-text-tertiary text-lg">No members found. Configure your clan ID to display live roster data.</p>
+        {members.length === 0 && (
+          <div class="px-6 py-16 text-center">
+            <p class="text-text-tertiary text-lg">No members found. Configure your clan ID to display live roster data.</p>
+          </div>
+        )}
+      </div>
+      <!-- End Left Column -->
+
+      <!-- Right Column: Legend Sidebar -->
+      <aside class="xl:sticky xl:top-4 xl:self-start">
+        <div class="steel-panel p-4">
+          <h3 class="text-lg font-display font-bold text-gold-DEFAULT mb-3 uppercase border-b border-navy-700 pb-2">
+            Commendations
+          </h3>
+          <div class="space-y-2 text-sm">
+            {Object.entries(ACHIEVEMENT_PINS).map(([key, pin]) => (
+              <div class="flex items-start gap-2">
+                <span class="text-xl flex-shrink-0" style={`color: ${pin.color};`}>
+                  {pin.icon}
+                </span>
+                <div class="min-w-0">
+                  <div class="font-bold text-text-primary text-xs" style={`color: ${pin.color};`}>
+                    {pin.name}
+                  </div>
+                  <div class="text-text-tertiary text-xs leading-tight">
+                    {pin.description}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- Insignia Legend -->
+          <h3 class="text-lg font-display font-bold text-gold-DEFAULT mt-6 mb-3 uppercase border-b border-navy-700 pb-2">
+            Rank Insignia
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #FFD700;">★★★★★</span>
+              <span class="text-text-secondary text-xs">Commander</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #FFA500;">★★★★</span>
+              <span class="text-text-secondary text-xs">Executive Officer</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #9B59B6;">★★★</span>
+              <span class="text-text-secondary text-xs">Recruiting Officer</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #00D9FF;">★★</span>
+              <span class="text-text-secondary text-xs">Commissioned Officer</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #0055AA;">★</span>
+              <span class="text-text-secondary text-xs">Line Officer</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-mono" style="color: #8B9CB6;">═</span>
+              <span class="text-text-secondary text-xs">Enlisted</span>
+            </div>
+          </div>
         </div>
-      )}
+      </aside>
+      <!-- End Right Column -->
+    </div>
+    <!-- End Grid Layout -->
 
     <!-- Back to Home -->
     <div class="mt-12 text-center">

@@ -259,3 +259,39 @@ export function calculateTopPerformers(members: any[], topN: number = 5): number
     .slice(0, topN)
     .map(m => m.account_id);
 }
+
+/**
+ * Calculate service duration in human-readable format
+ */
+export function calculateServiceDuration(joinedAt: number | Date, leftAt: number | Date): string {
+  const start = typeof joinedAt === 'number' ? new Date(joinedAt * 1000) : new Date(joinedAt);
+  const end = typeof leftAt === 'number' ? new Date(leftAt * 1000) : new Date(leftAt);
+
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  const days = diffDays % 30;
+
+  const parts: string[] = [];
+  if (years > 0) parts.push(`${years}y`);
+  if (months > 0) parts.push(`${months}mo`);
+  if (days > 0 && years === 0) parts.push(`${days}d`);
+
+  return parts.length > 0 ? parts.join(' ') : '< 1 day';
+}
+
+/**
+ * Format service period as date range
+ */
+export function formatServicePeriod(joinedAt: number | Date, leftAt: number | Date): string {
+  const start = typeof joinedAt === 'number' ? new Date(joinedAt * 1000) : new Date(joinedAt);
+  const end = typeof leftAt === 'number' ? new Date(leftAt * 1000) : new Date(leftAt);
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  return `${formatDate(start)} - ${formatDate(end)}`;
+}

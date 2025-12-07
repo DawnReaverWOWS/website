@@ -13,8 +13,13 @@ import {
   getRankInsignia,
   calculateAchievements,
   calculateTopPerformers,
+  calculateServiceDuration,
+  formatServicePeriod,
   ACHIEVEMENT_PINS
 } from '../lib/utils';
+import { db } from '../db';
+import { friendsOfClan } from '../db/schema';
+import { desc } from 'drizzle-orm';
 
 const members = await getMembersWithStats();
 
@@ -57,6 +62,19 @@ memberAchievements.sort((a, b) => {
   const bOrder = getRoleOrder(b.role);
   return aOrder - bOrder;
 });
+
+// Fetch Friends of the Clan (former members)
+let friendsOfClanMembers: any[] = [];
+try {
+  friendsOfClanMembers = await db.select()
+    .from(friendsOfClan)
+    .orderBy(desc(friendsOfClan.leftAt));
+} catch (error) {
+  console.error('Failed to fetch friends of clan:', error);
+}
+
+// Disable prerendering since we're using database
+export const prerender = false;
 ---
 
 <BaseLayout
@@ -359,6 +377,85 @@ memberAchievements.sort((a, b) => {
       <!-- End Right Column -->
     </div>
     <!-- End Grid Layout -->
+
+    <!-- Friends of the Clan Section -->
+    {friendsOfClanMembers.length > 0 && (
+      <div class="mt-16">
+        <div class="mb-4">
+          <h2 class="text-2xl font-display font-bold text-steel-light uppercase">Friends of the Clan</h2>
+          <p class="text-text-tertiary text-sm mt-1">Former members who served with honor | {friendsOfClanMembers.length} Veterans</p>
+        </div>
+
+        <div class="steel-panel p-0">
+          <table class="w-full">
+            <thead class="bg-navy-900 border-b-2 border-steel-light">
+              <tr>
+                <th class="px-6 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                  Player
+                </th>
+                <th class="px-6 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                  Insignia
+                </th>
+                <th class="px-6 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                  Role
+                </th>
+                <th class="px-6 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                  Service Period
+                </th>
+                <th class="px-6 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider">
+                  Duration
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-navy-800">
+              {friendsOfClanMembers.map((friend) => (
+                <tr class="bg-navy-900/20 hover:bg-navy-800/30 transition-colors border-l-2 border-transparent hover:border-steel-light">
+                  <!-- Player Name -->
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span class="text-sm font-bold text-steel-light">
+                      {friend.nickname}
+                    </span>
+                  </td>
+
+                  <!-- Insignia -->
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span
+                      class="text-lg font-mono tracking-wider opacity-60"
+                      style={`color: ${getRoleColor(friend.role)};`}
+                      title={getRoleDisplayName(friend.role)}
+                    >
+                      {getRankInsignia(friend.role)}
+                    </span>
+                  </td>
+
+                  <!-- Role -->
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span
+                      class="px-2 py-1 text-xs font-bold rounded uppercase tracking-wider border inline-block opacity-70"
+                      style={`color: ${getRoleColor(friend.role)}; border-color: ${getRoleColor(friend.role)}; background-color: ${getRoleColor(friend.role)}15;`}
+                    >
+                      {getRoleDisplayName(friend.role)}
+                    </span>
+                  </td>
+
+                  <!-- Service Period -->
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-text-tertiary">
+                    {formatServicePeriod(friend.joinedAt, friend.leftAt)}
+                  </td>
+
+                  <!-- Duration -->
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span class="text-sm font-mono font-semibold text-steel-light">
+                      {calculateServiceDuration(friend.joinedAt, friend.leftAt)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
 
     <!-- Back to Home -->
     <div class="mt-12 text-center">

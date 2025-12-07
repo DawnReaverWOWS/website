@@ -110,6 +110,21 @@ export const announcements = pgTable('announcements', {
 });
 
 /**
+ * Friends of the Clan - Former members
+ */
+export const friendsOfClan = pgTable('friends_of_clan', {
+  id: serial('id').primaryKey(),
+  accountId: integer('account_id').notNull().unique(), // WoWS account ID
+  nickname: varchar('nickname', { length: 255 }).notNull(),
+  role: varchar('role', { length: 100 }).notNull(), // Their role when they left
+  joinedAt: timestamp('joined_at').notNull(), // When they joined the clan
+  leftAt: timestamp('left_at').notNull(), // When they left the clan
+  reason: varchar('reason', { length: 100 }), // 'retired', 'moved', 'removed', etc. (optional)
+  notes: text('notes'), // Optional admin notes
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+/**
  * Audit log for tracking changes
  */
 export const auditLog = pgTable('audit_log', {
@@ -132,3 +147,5 @@ export type Application = typeof applications.$inferSelect;
 export type NewApplication = typeof applications.$inferInsert;
 export type Announcement = typeof announcements.$inferSelect;
 export type NewAnnouncement = typeof announcements.$inferInsert;
+export type FriendOfClan = typeof friendsOfClan.$inferSelect;
+export type NewFriendOfClan = typeof friendsOfClan.$inferInsert;

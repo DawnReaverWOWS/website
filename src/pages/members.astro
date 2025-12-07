@@ -77,16 +77,16 @@ memberAchievements.sort((a, b) => {
     </div>
 
 
+    <!-- Table Header (Outside Grid) -->
+    <div class="mb-4">
+      <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
+      <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
+    </div>
+
     <!-- Grid Layout: Table + Legend Sidebar -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
       <!-- Left Column: Members Table -->
       <div class="min-w-0">
-        <!-- Table Header -->
-        <div class="mb-4">
-          <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
-          <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
-        </div>
-
         <!-- Table -->
         <div class="overflow-x-auto">
         <table class="w-full" id="member-table">
@@ -302,7 +302,7 @@ memberAchievements.sort((a, b) => {
       <!-- End Left Column -->
 
       <!-- Right Column: Legend Sidebar -->
-      <aside class="xl:sticky xl:top-4 xl:self-start">
+      <aside class="xl:self-start">
         <div class="steel-panel p-4">
           <h3 class="text-lg font-display font-bold text-gold-DEFAULT mb-3 uppercase border-b border-navy-700 pb-2">
             Commendations

@@ -107,9 +107,9 @@ export function getRoleColor(role: string): string {
  */
 export function getRankInsignia(role: string): string {
   const insigniaMap: Record<string, string> = {
-    commander: '★★★★',              // 4 stars - Fleet Admiral
-    executive_officer: '★★★',       // 3 stars - Vice Admiral
-    recruitment_officer: '★★ ║',    // 2 stars + special bar - Rear Admiral (Recruiting)
+    commander: '★★★★★',             // 5 stars - Fleet Admiral
+    executive_officer: '★★★★',      // 4 stars - Admiral
+    recruitment_officer: '★★★',     // 3 stars - Vice Admiral
     commissioned_officer: '★★',     // 2 stars - Rear Admiral
     officer: '★',                   // 1 star - Commodore
     private: '═',                   // Bar - Officer Candidate

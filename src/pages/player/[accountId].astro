@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getPlayerStats, getPlayerAchievements, getAchievementEncyclopedia } from '../../lib/wargaming-api';
+import { formatNumber, formatPercentage, getPRRating, getWinRateRating } from '../../lib/utils';
+import type { PlayerStats, AchievementMetadata, PlayerAchievements } from '../../lib/types';
+
+export const prerender = false;
+
+const { accountId } = Astro.params;
+
+if (!accountId || isNaN(parseInt(accountId))) {
+  return Astro.redirect('/members');
+}
+
+const accountIdNum = parseInt(accountId);
+
+// Fetch player data
+let playerStats: PlayerStats | null = null;
+let playerAchievements: PlayerAchievements | null = null;
+let achievementEncyclopedia: Record<string, AchievementMetadata> | null = null;
+
+try {
+  [playerStats, playerAchievements, achievementEncyclopedia] = await Promise.all([
+    getPlayerStats([accountIdNum]),
+    getPlayerAchievements(accountIdNum),
+    getAchievementEncyclopedia(),
+  ]);
+} catch (error) {
+  console.error('Failed to fetch player data:', error);
+}
+
+if (!playerStats || playerStats.length === 0) {
+  return Astro.redirect('/members');
+}
+
+const player = playerStats[0];
+
+// Check for hidden profile
+if (player.hidden_profile) {
+  return Astro.redirect('/members');
+}
+
+const stats = player.statistics.pvp;
+const battles = stats.battles;
+const winRate = (stats.wins / battles) * 100;
+const avgDamage = stats.damage_dealt / battles;
+const avgXp = stats.xp / battles;
+const survivalRate = (stats.survived_battles / battles) * 100;
+const avgFrags = stats.frags / battles;
+
+// Calculate PR (simplified - you can use the calculatePR function from wargaming-api.ts)
+const expectedDamage = 50000; // Placeholder
+const expectedWinRate = 50;
+const expectedFrags = 1.0;
+
+const rDmg = avgDamage / expectedDamage;
+const rWins = winRate / expectedWinRate;
+const rFrags = avgFrags / expectedFrags;
+
+const nDmg = Math.max(0, (rDmg - 0.4) / (1 - 0.4));
+const nFrags = Math.max(0, (rFrags - 0.1) / (1 - 0.1));
+const nWins = Math.max(0, (rWins - 0.7) / (1 - 0.7));
+
+const pr = Math.round(700 * nDmg + 300 * nFrags + 150 * nWins);
+
+const prRating = getPRRating(pr);
+const wrRating = getWinRateRating(winRate);
+
+// Group achievements by category
+interface GroupedAchievement {
+  id: string;
+  metadata: AchievementMetadata;
+  count: number;
+  progress?: number;
+}
+
+const groupedAchievements: Record<string, GroupedAchievement[]> = {
+  battle_hero: [],
+  honorable: [],
+  clan: [],
+  service_medal: [],
+  festival: [],
+  other: [],
+};
+
+if (playerAchievements && achievementEncyclopedia) {
+  // Process battle achievements
+  for (const [achievementId, count] of Object.entries(playerAchievements.battle)) {
+    const metadata = achievementEncyclopedia[achievementId];
+    if (!metadata || metadata.hidden === 1) continue;
+
+    const category = metadata.type || 'other';
+    const targetCategory = category in groupedAchievements ? category : 'other';
+
+    groupedAchievements[targetCategory].push({
+      id: achievementId,
+      metadata,
+      count,
+    });
+  }
+
+  // Process progress achievements
+  for (const [achievementId, progress] of Object.entries(playerAchievements.progress)) {
+    const metadata = achievementEncyclopedia[achievementId];
+    if (!metadata || metadata.hidden === 1) continue;
+
+    const category = metadata.type || 'other';
+    const targetCategory = category in groupedAchievements ? category : 'other';
+
+    groupedAchievements[targetCategory].push({
+      id: achievementId,
+      metadata,
+      count: 0,
+      progress,
+    });
+  }
+
+  // Sort each category by count descending
+  for (const category of Object.keys(groupedAchievements)) {
+    groupedAchievements[category].sort((a, b) => b.count - a.count);
+  }
+}
+
+const totalAchievements = Object.values(groupedAchievements).reduce((sum, arr) => sum + arr.length, 0);
+
+const categoryLabels: Record<string, string> = {
+  battle_hero: 'Heroic Achievements',
+  honorable: 'Honorable Achievements',
+  clan: 'Clan Achievements',
+  service_medal: 'Service Medals',
+  festival: 'Festival Achievements',
+  other: 'Other Achievements',
+};
+
+const categoryColors: Record<string, string> = {
+  battle_hero: 'text-red-alert',
+  honorable: 'text-gold-DEFAULT',
+  clan: 'text-cyan-glow',
+  service_medal: 'text-steel-light',
+  festival: 'text-purple-400',
+  other: 'text-text-secondary',
+};
+---
+
+<BaseLayout
+  title={`${player.nickname} - DawnReaver [DAWN]`}
+  description={`View detailed stats and achievements for ${player.nickname}`}
+>
+  <Navigation />
+
+  <main class="max-w-[1920px] mx-auto px-8 py-8">
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a
+        href="/members"
+        class="steel-panel px-4 py-2 text-cyan-glow font-semibold uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all inline-block text-sm"
+      >
+        ← Back to Roster
+      </a>
+    </div>
+
+    <!-- Player Header -->
+    <div class="steel-panel p-6 mb-6">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 class="text-4xl font-display font-bold text-gold-DEFAULT mb-2">{player.nickname}</h1>
+          <p class="text-steel-light text-sm">Account ID: {accountIdNum}</p>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold text-cyan-glow">{formatNumber(battles)}</div>
+          <div class="text-steel-light text-xs uppercase">Battles</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold" style={`color: ${wrRating.color}`}>
+            {formatPercentage(winRate)}
+          </div>
+          <div class="text-steel-light text-xs uppercase">{wrRating.label} WR</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold text-text-primary">{formatNumber(Math.round(avgDamage))}</div>
+          <div class="text-steel-light text-xs uppercase">Avg Damage</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold" style={`color: ${prRating.color}`}>
+            {formatNumber(pr)}
+          </div>
+          <div class="text-steel-light text-xs uppercase">{prRating.label}</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold text-text-primary">{formatNumber(Math.round(avgXp))}</div>
+          <div class="text-steel-light text-xs uppercase">Avg XP</div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-2xl font-display font-bold text-text-primary">{formatPercentage(survivalRate)}</div>
+          <div class="text-steel-light text-xs uppercase">Survival</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Section -->
+    {totalAchievements > 0 ? (
+      <div>
+        <h2 class="text-2xl font-display font-bold text-gold-DEFAULT mb-4 uppercase">
+          Achievements ({totalAchievements})
+        </h2>
+
+        <!-- Achievement Categories -->
+        <div class="space-y-6">
+          {Object.entries(groupedAchievements).map(([category, achievements]) => {
+            if (achievements.length === 0) return null;
+
+            return (
+              <div class="steel-panel p-4">
+                <h3 class:list={['text-xl font-display font-bold mb-3 uppercase', categoryColors[category]]}>
+                  {categoryLabels[category]} ({achievements.length})
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {achievements.map((achievement) => (
+                    <div class="flex items-center gap-3 bg-navy-800 p-3 rounded border border-navy-700">
+                      {achievement.metadata.image && (
+                        <img
+                          src={achievement.metadata.image}
+                          alt={achievement.metadata.name}
+                          class="w-12 h-12"
+                          loading="lazy"
+                          onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22%3E%3Crect fill=%22%23444%22 width=%2248%22 height=%2248%22/%3E%3C/svg%3E'"
+                        />
+                      )}
+                      <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-text-primary text-sm truncate">
+                          {achievement.metadata.name}
+                        </div>
+                        <div class="text-text-tertiary text-xs truncate">
+                          {achievement.count > 0 && `×${achievement.count}`}
+                          {achievement.progress !== undefined && achievement.metadata.max_progress > 0 && (
+                            <span>
+                              Progress: {achievement.progress}/{achievement.metadata.max_progress}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ) : (
+      <div class="steel-panel p-8 text-center">
+        <p class="text-text-secondary text-lg">No achievement data available</p>
+      </div>
+    )}
+
+    <!-- Back Button Bottom -->
+    <div class="mt-8 text-center">
+      <a
+        href="/members"
+        class="steel-panel px-6 py-3 text-cyan-glow font-display font-bold uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all inline-block"
+      >
+        ← Back to Roster
+      </a>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

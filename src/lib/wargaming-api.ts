@@ -6,6 +6,10 @@ import type {
   PlayerStats,
   WargamingAPIResponse,
   MemberWithStats,
+  AchievementEncyclopediaResponse,
+  PlayerAchievementsResponse,
+  AchievementMetadata,
+  PlayerAchievements,
 } from './types';
 import { cache, CACHE_DURATION } from './cache';
 
@@ -240,4 +244,65 @@ function chunkArray<T>(array: T[], size: number): T[][] {
     chunks.push(array.slice(i, i + size));
   }
   return chunks;
+}
+
+/**
+ * Get achievement encyclopedia (metadata for all achievements)
+ * Cached for 24 hours since this data rarely changes
+ */
+export async function getAchievementEncyclopedia(): Promise<Record<string, AchievementMetadata> | null> {
+  const cacheKey = 'achievement:encyclopedia';
+
+  // Check cache first
+  const cached = cache.get<Record<string, AchievementMetadata>>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from API
+  const data = await fetchWargaming<AchievementEncyclopediaResponse>(
+    '/encyclopedia/achievements/'
+  );
+
+  if (!data) {
+    return null;
+  }
+
+  // Cache the result
+  cache.set(cacheKey, data, CACHE_DURATION.ACHIEVEMENT_ENCYCLOPEDIA);
+
+  return data;
+}
+
+/**
+ * Get player achievements for a specific account
+ * Cached for 1 hour since achievements change slowly
+ */
+export async function getPlayerAchievements(accountId: number): Promise<PlayerAchievements | null> {
+  const cacheKey = `player:${accountId}:achievements`;
+
+  // Check cache first
+  const cached = cache.get<PlayerAchievements>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from API
+  const data = await fetchWargaming<PlayerAchievementsResponse>(
+    '/account/achievements/',
+    {
+      account_id: accountId.toString(),
+    }
+  );
+
+  if (!data || !data[accountId.toString()]) {
+    return null;
+  }
+
+  const achievements = data[accountId.toString()];
+
+  // Cache the result
+  cache.set(cacheKey, achievements, CACHE_DURATION.PLAYER_ACHIEVEMENTS);
+
+  return achievements;
 }

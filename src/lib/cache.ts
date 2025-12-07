@@ -51,4 +51,6 @@ export const CACHE_DURATION = {
   MEMBER_LIST: 15 * 60 * 1000,    // 15 minutes
   PLAYER_STATS: 5 * 60 * 1000,    // 5 minutes
   STATIC_DATA: 24 * 60 * 60 * 1000, // 24 hours
+  ACHIEVEMENT_ENCYCLOPEDIA: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
+  PLAYER_ACHIEVEMENTS: 60 * 60 * 1000, // 1 hour (changes slowly)
 };

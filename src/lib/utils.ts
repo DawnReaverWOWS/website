@@ -205,8 +205,8 @@ export function calculateAchievements(member: {
   const achievements: string[] = [];
   const now = Date.now() / 1000; // Convert to seconds
 
-  // Founder (hardcoded account IDs - you'll need to set these)
-  const founderIds = [1234567890]; // Replace with actual founder account IDs
+  // Founder (hardcoded account IDs)
+  const founderIds = [1061534016]; // theRealKoreanJesus - sole founder
   if (founderIds.includes(member.account_id)) {
     achievements.push('founder');
   }

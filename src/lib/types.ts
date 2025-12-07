@@ -71,3 +71,30 @@ export interface WargamingAPIResponse<T> {
     code: number;
   };
 }
+
+export interface AchievementMetadata {
+  achievement_id: string;
+  name: string;
+  description: string;
+  image: string;
+  image_inactive: string;
+  type: string;
+  sub_type: string;
+  battle_types: string[];
+  hidden: number;
+  max_progress: number;
+  is_progress: number;
+}
+
+export interface PlayerAchievements {
+  battle: Record<string, number>;
+  progress: Record<string, number>;
+}
+
+export interface AchievementEncyclopediaResponse {
+  [achievementId: string]: AchievementMetadata;
+}
+
+export interface PlayerAchievementsResponse {
+  [accountId: string]: PlayerAchievements;
+}

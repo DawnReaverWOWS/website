@@ -379,14 +379,14 @@ export const prerender = false;
     <!-- End Grid Layout -->
 
     <!-- Friends of the Clan Section -->
-    {friendsOfClanMembers.length > 0 && (
-      <div class="mt-16">
-        <div class="mb-4">
-          <h2 class="text-2xl font-display font-bold text-steel-light uppercase">Friends of the Clan</h2>
-          <p class="text-text-tertiary text-sm mt-1">Former members who served with honor | {friendsOfClanMembers.length} Veterans</p>
-        </div>
+    <div class="mt-16">
+      <div class="mb-4">
+        <h2 class="text-2xl font-display font-bold text-steel-light uppercase">Friends of the Clan</h2>
+        <p class="text-text-tertiary text-sm mt-1">Former members who served with honor{friendsOfClanMembers.length > 0 ? ` | ${friendsOfClanMembers.length} Veterans` : ''}</p>
+      </div>
 
-        <div class="steel-panel p-0">
+      <div class="steel-panel p-0">
+        {friendsOfClanMembers.length > 0 ? (
           <table class="w-full">
             <thead class="bg-navy-900 border-b-2 border-steel-light">
               <tr>
@@ -453,9 +453,14 @@ export const prerender = false;
               ))}
             </tbody>
           </table>
-        </div>
+        ) : (
+          <div class="px-6 py-16 text-center">
+            <p class="text-text-tertiary text-lg">No former members listed at this time.</p>
+            <p class="text-text-secondary text-sm mt-2">Veterans who served with honor will be honored here.</p>
+          </div>
+        )}
       </div>
-    )}
+    </div>
 
     <!-- Back to Home -->
     <div class="mt-12 text-center">

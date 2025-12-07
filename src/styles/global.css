@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
+
+/* Custom CSS Variables - DawnReaver Dark Theme */
+@theme {
+  /* Background Colors */
+  --color-navy-950: #0a1929;
+  --color-navy-900: #1e293b;
+  --color-navy-800: #334155;
+  --color-navy-700: #475569;
+
+  /* Accent Colors */
+  --color-gold-DEFAULT: #d4af37;
+  --color-gold-dark: #b8941f;
+  --color-silver-DEFAULT: #c0c0c0;
+  --color-bronze-DEFAULT: #cd7f32;
+  --color-bronze-dark: #b8722c;
+
+  /* Text Colors */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+
+  /* Font Families */
+  --font-family-sans: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: 'Roboto Mono', 'SF Mono', 'Consolas', monospace;
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(212, 175, 55, 0.3);
+  color: #f1f5f9;
+}

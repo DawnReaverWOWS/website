@@ -131,17 +131,19 @@ const shipTypeData = {
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Pie Chart -->
-        <div class="steel-panel p-8">
+        <div class="steel-panel p-8 flex flex-col">
           <h3 class="text-xl font-display font-bold text-gold-DEFAULT mb-6 uppercase text-center">
             Ship Type Distribution
           </h3>
-          <div class="flex justify-center items-center">
-            <canvas id="shipTypeChart" class="max-w-md"></canvas>
+          <div class="flex-1 flex justify-center items-center" style="min-height: 400px; max-height: 500px;">
+            <div style="position: relative; width: 100%; max-width: 400px; height: 100%;">
+              <canvas id="shipTypeChart"></canvas>
+            </div>
           </div>
         </div>
 
         <!-- Legend & Stats -->
-        <div class="steel-panel p-8">
+        <div class="steel-panel p-8 flex flex-col">
           <h3 class="text-xl font-display font-bold text-gold-DEFAULT mb-6 uppercase">
             Breakdown by Class
           </h3>
@@ -338,66 +340,85 @@ const shipTypeData = {
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script define:vars={{ shipTypeData }}>
   // Initialize ship type distribution chart
-  const ctx = document.getElementById('shipTypeChart');
+  window.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('shipTypeChart');
 
-  if (ctx) {
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Destroyers', 'Cruisers', 'Battleships', 'Carriers', 'Submarines'],
-        datasets: [{
-          data: [
-            shipTypeData.destroyer,
-            shipTypeData.cruiser,
-            shipTypeData.battleship,
-            shipTypeData.carrier,
-            shipTypeData.submarine
-          ],
-          backgroundColor: [
-            '#FF6B35',  // Destroyers - Orange
-            '#00D9FF',  // Cruisers - Cyan
-            '#FFD700',  // Battleships - Gold
-            '#9B59B6',  // Carriers - Purple
-            '#318000',  // Submarines - Green
-          ],
-          borderColor: '#1a2332',
-          borderWidth: 3,
-          hoverOffset: 15,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: false,
-          },
-          tooltip: {
-            backgroundColor: 'rgba(26, 35, 50, 0.95)',
-            titleColor: '#FFD700',
-            bodyColor: '#C8D0E0',
-            borderColor: '#00D9FF',
-            borderWidth: 1,
-            padding: 12,
-            displayColors: true,
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.parsed;
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = ((value / total) * 100).toFixed(1);
-                return `${label}: ${value} (${percentage}%)`;
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Destroyers', 'Cruisers', 'Battleships', 'Carriers', 'Submarines'],
+          datasets: [{
+            data: [
+              shipTypeData.destroyer,
+              shipTypeData.cruiser,
+              shipTypeData.battleship,
+              shipTypeData.carrier,
+              shipTypeData.submarine
+            ],
+            backgroundColor: [
+              '#FF6B35',  // Destroyers - Orange
+              '#00D9FF',  // Cruisers - Cyan
+              '#FFD700',  // Battleships - Gold
+              '#9B59B6',  // Carriers - Purple
+              '#318000',  // Submarines - Green
+            ],
+            borderColor: '#1a2332',
+            borderWidth: 4,
+            hoverBorderColor: '#FFD700',
+            hoverBorderWidth: 5,
+            hoverOffset: 20,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1,
+          cutout: '50%',
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(26, 35, 50, 0.98)',
+              titleColor: '#FFD700',
+              titleFont: {
+                size: 16,
+                weight: 'bold'
+              },
+              bodyColor: '#C8D0E0',
+              bodyFont: {
+                size: 14
+              },
+              borderColor: '#00D9FF',
+              borderWidth: 2,
+              padding: 16,
+              displayColors: true,
+              boxWidth: 12,
+              boxHeight: 12,
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.parsed;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return ` ${label}: ${value} members (${percentage}%)`;
+                }
               }
             }
+          },
+          animation: {
+            animateRotate: true,
+            animateScale: true,
+            duration: 1500,
+            easing: 'easeInOutQuart'
+          },
+          layout: {
+            padding: 20
           }
-        },
-        animation: {
-          animateRotate: true,
-          animateScale: true,
-          duration: 1000,
-          easing: 'easeInOutQuart'
         }
-      }
-    });
-  }
+      });
+    }
+  });
 </script>

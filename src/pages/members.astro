@@ -86,9 +86,8 @@ memberAchievements.sort((a, b) => {
     <!-- Grid Layout: Table + Legend Sidebar -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
       <!-- Left Column: Members Table -->
-      <div class="min-w-0">
+      <div class="min-w-0 overflow-x-auto">
         <!-- Table -->
-        <div class="overflow-x-auto">
         <table class="w-full" id="member-table">
           <thead class="bg-navy-900 border-b-2 border-gold-DEFAULT">
             <tr>
@@ -291,7 +290,6 @@ memberAchievements.sort((a, b) => {
             })}
           </tbody>
         </table>
-      </div>
 
         {members.length === 0 && (
           <div class="px-6 py-16 text-center">

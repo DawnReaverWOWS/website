@@ -3,6 +3,8 @@ import { db } from '../../../db';
 import { members } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
+export const prerender = false;
+
 export const GET: APIRoute = async () => {
   try {
     const allMembers = await db.select().from(members).orderBy(members.role);

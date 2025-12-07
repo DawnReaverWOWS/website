@@ -3,6 +3,8 @@ import { db } from '../../../db';
 import { applications, auditLog } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
+export const prerender = false;
+
 export const GET: APIRoute = async ({ url }) => {
   try {
     const status = url.searchParams.get('status');

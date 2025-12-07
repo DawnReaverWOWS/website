@@ -3,6 +3,8 @@ import { db } from '../../../db';
 import { applications, auditLog } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
+export const prerender = false;
+
 // Verify API secret for protected endpoint
 function verifyAuth(request: Request): boolean {
   const authHeader = request.headers.get('Authorization');

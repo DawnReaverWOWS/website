@@ -4,6 +4,8 @@ import { members, auditLog } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 import { getClanMembers } from '../../../lib/wargaming-api';
 
+export const prerender = false;
+
 // Verify API secret for protected endpoint
 function verifyAuth(request: Request): boolean {
   const authHeader = request.headers.get('Authorization');

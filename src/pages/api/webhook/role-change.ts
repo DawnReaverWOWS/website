@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 // Verify API secret for webhook
 function verifyAuth(request: Request): boolean {
   const authHeader = request.headers.get('Authorization');

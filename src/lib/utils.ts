@@ -101,3 +101,161 @@ export function getRoleColor(role: string): string {
   };
   return colorMap[role] || '#8B9CB6';
 }
+
+/**
+ * Get military rank insignia based on role
+ */
+export function getRankInsignia(role: string): string {
+  const insigniaMap: Record<string, string> = {
+    commander: '★★★★',              // 4 stars - Fleet Admiral
+    executive_officer: '★★★',       // 3 stars - Vice Admiral
+    recruitment_officer: '★★ ║',    // 2 stars + special bar - Rear Admiral (Recruiting)
+    commissioned_officer: '★★',     // 2 stars - Rear Admiral
+    officer: '★',                   // 1 star - Commodore
+    private: '═',                   // Bar - Officer Candidate
+  };
+  return insigniaMap[role] || '─';
+}
+
+/**
+ * Achievement pin types and their criteria
+ */
+export interface AchievementPin {
+  icon: string;
+  name: string;
+  description: string;
+  color: string;
+}
+
+export const ACHIEVEMENT_PINS: Record<string, AchievementPin> = {
+  founder: {
+    icon: '⚓',
+    name: 'Founder',
+    description: 'Original founding member of the clan',
+    color: '#FFD700',
+  },
+  veteran: {
+    icon: '▓',
+    name: 'Veteran',
+    description: 'Member for 6+ months',
+    color: '#C0C0C0',
+  },
+  battle_hardened: {
+    icon: '▄',
+    name: 'Battle Hardened',
+    description: '10,000+ total battles',
+    color: '#8B4513',
+  },
+  elite_warrior: {
+    icon: '◆',
+    name: 'Elite Warrior',
+    description: '2450+ PR (Super Unicum)',
+    color: '#9B59B6',
+  },
+  sharpshooter: {
+    icon: '◇',
+    name: 'Sharpshooter',
+    description: '60%+ Win Rate',
+    color: '#D4AF37',
+  },
+  top_performer: {
+    icon: '■',
+    name: 'Top Performer',
+    description: 'Top 5 in clan by PR',
+    color: '#FF6B35',
+  },
+  active_duty: {
+    icon: '●',
+    name: 'Active Duty',
+    description: 'Played within last 7 days',
+    color: '#00D9FF',
+  },
+  clan_battle_veteran: {
+    icon: '▀',
+    name: 'CB Veteran',
+    description: 'Participated in 3+ CB seasons',
+    color: '#318000',
+  },
+  damage_dealer: {
+    icon: '►',
+    name: 'Damage Dealer',
+    description: '80,000+ average damage',
+    color: '#FE0E00',
+  },
+  consistent: {
+    icon: '▬',
+    name: 'Consistent',
+    description: '1000+ recent battles',
+    color: '#02C9B3',
+  },
+};
+
+/**
+ * Calculate which achievement pins a member has earned
+ */
+export function calculateAchievements(member: {
+  battles: number;
+  pr: number;
+  win_rate: number;
+  avg_damage: number;
+  last_battle_time: number | null;
+  joined_at?: number | null;
+  account_id: number;
+}): string[] {
+  const achievements: string[] = [];
+  const now = Date.now() / 1000; // Convert to seconds
+
+  // Founder (hardcoded account IDs - you'll need to set these)
+  const founderIds = [1234567890]; // Replace with actual founder account IDs
+  if (founderIds.includes(member.account_id)) {
+    achievements.push('founder');
+  }
+
+  // Veteran - member for 6+ months (requires joined_at timestamp)
+  if (member.joined_at && (now - member.joined_at) > (180 * 24 * 60 * 60)) {
+    achievements.push('veteran');
+  }
+
+  // Battle Hardened - 10,000+ battles
+  if (member.battles >= 10000) {
+    achievements.push('battle_hardened');
+  }
+
+  // Elite Warrior - 2450+ PR (Super Unicum)
+  if (member.pr >= 2450) {
+    achievements.push('elite_warrior');
+  }
+
+  // Sharpshooter - 60%+ Win Rate
+  if (member.win_rate >= 60) {
+    achievements.push('sharpshooter');
+  }
+
+  // Active Duty - played within last 7 days
+  if (member.last_battle_time && (now - member.last_battle_time) < (7 * 24 * 60 * 60)) {
+    achievements.push('active_duty');
+  }
+
+  // Damage Dealer - 80,000+ average damage
+  if (member.avg_damage >= 80000) {
+    achievements.push('damage_dealer');
+  }
+
+  // Consistent - 1000+ battles (could be made more sophisticated)
+  if (member.battles >= 1000) {
+    achievements.push('consistent');
+  }
+
+  return achievements;
+}
+
+/**
+ * Calculate top performers by PR
+ */
+export function calculateTopPerformers(members: any[], topN: number = 5): number[] {
+  return members
+    .filter(m => !m.hidden_profile && m.pr > 0)
+    .sort((a, b) => b.pr - a.pr)
+    .slice(0, topN)
+    .map(m => m.account_id);
+}

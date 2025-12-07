@@ -3,7 +3,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
 import { getMembersWithStats } from '../lib/wargaming-api';
-import { formatNumber, formatPercentage, formatRelativeTime, getPRRating, getRoleDisplayName, getRoleColor } from '../lib/utils';
+import {
+  formatNumber,
+  formatPercentage,
+  formatRelativeTime,
+  getPRRating,
+  getRoleDisplayName,
+  getRoleColor,
+  getRankInsignia,
+  calculateAchievements,
+  calculateTopPerformers,
+  ACHIEVEMENT_PINS
+} from '../lib/utils';
 
 const members = await getMembersWithStats();
 
@@ -20,8 +31,28 @@ function getRoleOrder(role: string): number {
   return order[role] || 999;
 }
 
+// Calculate top performers for Top Performer pin
+const topPerformerIds = calculateTopPerformers(members, 5);
+
+// Calculate achievements for each member
+const memberAchievements = members.map(member => ({
+  ...member,
+  achievements: calculateAchievements({
+    ...member,
+    account_id: member.account_id,
+  }),
+  isTopPerformer: topPerformerIds.includes(member.account_id),
+}));
+
+// Add top_performer achievement to top 5
+memberAchievements.forEach(member => {
+  if (member.isTopPerformer && !member.achievements.includes('top_performer')) {
+    member.achievements.push('top_performer');
+  }
+});
+
 // Sort members by role hierarchy first
-members.sort((a, b) => {
+memberAchievements.sort((a, b) => {
   const aOrder = getRoleOrder(a.role);
   const bOrder = getRoleOrder(b.role);
   return aOrder - bOrder;
@@ -45,12 +76,87 @@ members.sort((a, b) => {
       </p>
     </div>
 
+    <!-- Legend Section (Collapsible) -->
+    <div class="steel-panel mb-6 overflow-hidden">
+      <button
+        id="legend-toggle"
+        class="w-full bg-navy-800 px-6 py-4 border-b border-navy-700 alert-border flex items-center justify-between hover:bg-navy-750 transition-colors cursor-pointer"
+      >
+        <div>
+          <h2 class="text-xl font-display font-bold text-cyan-glow uppercase">Insignia & Commendations Legend</h2>
+          <p class="text-steel-light text-sm mt-1">Click to expand reference guide</p>
+        </div>
+        <span id="legend-chevron" class="text-cyan-glow text-2xl transform transition-transform">▼</span>
+      </button>
+
+      <div id="legend-content" class="hidden bg-navy-900/50 p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Rank Insignia -->
+          <div>
+            <h3 class="text-lg font-display font-bold text-gold-DEFAULT mb-4 uppercase flex items-center gap-2">
+              <span class="text-2xl">★</span> Rank Insignia
+            </h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-gold-DEFAULT w-16 text-center">★★★★</span>
+                <span class="text-text-primary font-semibold">Commander</span>
+                <span class="text-text-tertiary">- Fleet Admiral</span>
+              </div>
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-orange-400 w-16 text-center">★★★</span>
+                <span class="text-text-primary font-semibold">Executive Officer</span>
+                <span class="text-text-tertiary">- Vice Admiral</span>
+              </div>
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-purple-400 w-16 text-center">★★ ║</span>
+                <span class="text-text-primary font-semibold">Recruiting Officer</span>
+                <span class="text-text-tertiary">- Rear Admiral (Recruiting)</span>
+              </div>
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-cyan-400 w-16 text-center">★★</span>
+                <span class="text-text-primary font-semibold">Commissioned Officer</span>
+                <span class="text-text-tertiary">- Rear Admiral</span>
+              </div>
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-blue-400 w-16 text-center">★</span>
+                <span class="text-text-primary font-semibold">Line Officer</span>
+                <span class="text-text-tertiary">- Commodore</span>
+              </div>
+              <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                <span class="text-2xl font-mono text-steel-light w-16 text-center">═</span>
+                <span class="text-text-primary font-semibold">Enlisted</span>
+                <span class="text-text-tertiary">- Officer Candidate</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievement Pins -->
+          <div>
+            <h3 class="text-lg font-display font-bold text-gold-DEFAULT mb-4 uppercase flex items-center gap-2">
+              <span class="text-2xl">◆</span> Service Commendations
+            </h3>
+            <div class="space-y-2 text-sm">
+              {Object.entries(ACHIEVEMENT_PINS).map(([key, pin]) => (
+                <div class="flex items-center gap-3 p-2 bg-navy-900/50 rounded">
+                  <span class="text-xl w-8 text-center" style={`color: ${pin.color};`}>{pin.icon}</span>
+                  <div class="flex-1">
+                    <span class="text-text-primary font-semibold">{pin.name}</span>
+                    <span class="text-text-tertiary text-xs block">{pin.description}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Members Table - Dark Gaming Theme -->
     <div class="steel-panel overflow-hidden">
       <!-- Table Header -->
       <div class="bg-navy-800 px-6 py-4 border-b border-navy-700 alert-border">
         <h2 class="text-2xl font-display font-bold text-gold-DEFAULT uppercase">Active Roster</h2>
-        <p class="text-steel-light text-sm mt-1">{members.length} Members Deployed</p>
+        <p class="text-steel-light text-sm mt-1">{memberAchievements.length} Members Deployed</p>
       </div>
 
       <!-- Table -->
@@ -69,11 +175,23 @@ members.sort((a, b) => {
                 <span class="sort-indicator ml-1 text-gold-DEFAULT opacity-0">▼</span>
               </th>
               <th
+                class="px-4 py-4 text-center text-xs font-display font-bold text-steel-light uppercase tracking-wider"
+                title="Rank Insignia"
+              >
+                Insignia
+              </th>
+              <th
                 class="px-6 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider cursor-pointer hover:bg-navy-800 transition-colors select-none"
                 data-sort="role"
               >
                 Role
                 <span class="sort-indicator ml-1 text-gold-DEFAULT opacity-0">▼</span>
+              </th>
+              <th
+                class="px-4 py-4 text-left text-xs font-display font-bold text-steel-light uppercase tracking-wider"
+                title="Service Commendations"
+              >
+                Commendations
               </th>
               <th
                 class="px-6 py-4 text-right text-xs font-display font-bold text-steel-light uppercase tracking-wider cursor-pointer hover:bg-navy-800 transition-colors select-none"
@@ -113,7 +231,7 @@ members.sort((a, b) => {
             </tr>
           </thead>
           <tbody class="divide-y divide-navy-800">
-            {members.map((member, index) => {
+            {memberAchievements.map((member, index) => {
               const prRating = getPRRating(member.pr);
 
               return (
@@ -126,6 +244,7 @@ members.sort((a, b) => {
                   data-avg-damage={member.avg_damage}
                   data-pr={member.pr}
                   data-last-battle-time={member.last_battle_time || 0}
+                  data-achievements={member.achievements.length}
                 >
                   <!-- Rank -->
                   <td class="rank-cell px-6 py-4 whitespace-nowrap">
@@ -144,6 +263,17 @@ members.sort((a, b) => {
                     </a>
                   </td>
 
+                  <!-- Insignia -->
+                  <td class="px-4 py-4 whitespace-nowrap text-center">
+                    <span
+                      class="text-xl font-mono tracking-wider"
+                      style={`color: ${getRoleColor(member.role)};`}
+                      title={getRoleDisplayName(member.role)}
+                    >
+                      {getRankInsignia(member.role)}
+                    </span>
+                  </td>
+
                   <!-- Role -->
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
@@ -152,6 +282,28 @@ members.sort((a, b) => {
                     >
                       {getRoleDisplayName(member.role)}
                     </span>
+                  </td>
+
+                  <!-- Commendations (Achievement Pins) -->
+                  <td class="px-4 py-4 whitespace-nowrap">
+                    <div class="flex gap-1 flex-wrap">
+                      {member.achievements.length > 0 ? (
+                        member.achievements.map(achievementKey => {
+                          const pin = ACHIEVEMENT_PINS[achievementKey];
+                          return pin ? (
+                            <span
+                              class="text-lg cursor-help"
+                              style={`color: ${pin.color};`}
+                              title={`${pin.name}: ${pin.description}`}
+                            >
+                              {pin.icon}
+                            </span>
+                          ) : null;
+                        })
+                      ) : (
+                        <span class="text-text-tertiary text-xs italic">-</span>
+                      )}
+                    </div>
                   </td>
 
                   <!-- Battles -->
@@ -235,6 +387,16 @@ members.sort((a, b) => {
 </BaseLayout>
 
 <script>
+  // Legend toggle functionality
+  const legendToggle = document.getElementById('legend-toggle');
+  const legendContent = document.getElementById('legend-content');
+  const legendChevron = document.getElementById('legend-chevron');
+
+  legendToggle?.addEventListener('click', () => {
+    legendContent?.classList.toggle('hidden');
+    legendChevron?.classList.toggle('rotate-180');
+  });
+
   // Client-side table sorting
   const table = document.getElementById('member-table');
   const headers = table?.querySelectorAll('th[data-sort]');

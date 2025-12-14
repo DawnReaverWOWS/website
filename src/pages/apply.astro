@@ -1,0 +1,436 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout
+  title="Apply to Join - DawnReaver [DAWN]"
+  description="Submit your application to join DawnReaver clan. We'll verify your stats and get back to you."
+>
+  <Navigation />
+
+  <main class="max-w-[1200px] mx-auto px-8 py-12">
+    <!-- Page Header -->
+    <div class="mb-12 text-center">
+      <h1 class="text-5xl font-display font-bold text-gold-DEFAULT mb-4 glow-gold uppercase">
+        Apply to Join
+      </h1>
+      <p class="text-steel-light text-xl">
+        Enter your World of Warships username to begin
+      </p>
+    </div>
+
+    <!-- Step 1: Player Search -->
+    <section id="step-1" class="mb-8">
+      <div class="steel-panel p-8 alert-border">
+        <h2 class="text-2xl font-display font-bold text-cyan-glow mb-6 uppercase flex items-center gap-3">
+          <span class="steel-panel w-10 h-10 flex items-center justify-center text-gold-DEFAULT alert-border">1</span>
+          Find Your Account
+        </h2>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            id="wows-username"
+            placeholder="Enter your WoWS username..."
+            class="flex-1 bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+          />
+          <button
+            id="search-btn"
+            class="steel-panel px-8 py-3 text-cyan-glow font-bold uppercase hover:bg-cyan-glow hover:text-navy-950 transition-all"
+          >
+            Search
+          </button>
+        </div>
+
+        <div id="search-error" class="mt-4 text-red-500 hidden"></div>
+        <div id="search-suggestions" class="mt-4 hidden">
+          <p class="text-text-secondary mb-2">Did you mean:</p>
+          <div id="suggestions-list" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Player Stats (hidden until search) -->
+    <section id="step-2" class="mb-8 hidden">
+      <div class="steel-panel p-8">
+        <h2 class="text-2xl font-display font-bold text-cyan-glow mb-6 uppercase flex items-center gap-3">
+          <span class="steel-panel w-10 h-10 flex items-center justify-center text-gold-DEFAULT alert-border">2</span>
+          Your Stats
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Player Info -->
+          <div>
+            <h3 id="player-name" class="text-3xl font-bold text-gold-DEFAULT mb-4"></h3>
+            <div id="player-stats" class="space-y-3">
+              <!-- Stats will be injected here -->
+            </div>
+          </div>
+
+          <!-- Clan Capacity -->
+          <div class="steel-panel p-6 alert-border">
+            <h3 class="text-xl font-bold text-cyan-glow mb-4">Clan Status</h3>
+            <div id="clan-capacity" class="text-4xl font-display font-bold mb-2">
+              <span id="member-count">0</span>/<span id="max-members">50</span>
+            </div>
+            <p id="clan-status-text" class="text-text-secondary"></p>
+          </div>
+        </div>
+
+        <!-- Requirements Check -->
+        <div id="requirements-check" class="mt-6 p-4 border border-steel-dark">
+          <h4 class="font-bold text-text-primary mb-3">Requirements Check</h4>
+          <div id="requirements-list" class="space-y-2">
+            <!-- Requirements will be injected here -->
+          </div>
+        </div>
+
+        <!-- Already in Clan Warning -->
+        <div id="already-in-clan" class="mt-6 p-4 bg-yellow-900/20 border border-yellow-500 hidden">
+          <p class="text-yellow-500 font-bold">You're already a member of DawnReaver!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Application Form (hidden until search) -->
+    <section id="step-3" class="mb-8 hidden">
+      <div class="steel-panel p-8 alert-border">
+        <h2 class="text-2xl font-display font-bold text-cyan-glow mb-6 uppercase flex items-center gap-3">
+          <span class="steel-panel w-10 h-10 flex items-center justify-center text-gold-DEFAULT alert-border">3</span>
+          Complete Your Application
+        </h2>
+
+        <form id="application-form" class="space-y-6">
+          <input type="hidden" id="form-account-id" />
+          <input type="hidden" id="form-nickname" />
+
+          <div>
+            <label class="block text-text-primary font-bold mb-2">Discord Username *</label>
+            <input
+              type="text"
+              id="discord-username"
+              placeholder="YourName#1234 or just YourName"
+              required
+              class="w-full bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-text-primary font-bold mb-2">Tier X Ships You Own</label>
+            <input
+              type="text"
+              id="tier-x-ships"
+              placeholder="e.g., Shimakaze, Des Moines, Montana"
+              class="w-full bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-text-primary font-bold mb-2">Availability for Clan Battles</label>
+            <input
+              type="text"
+              id="availability"
+              placeholder="e.g., Mon/Wed/Fri evenings EST"
+              class="w-full bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-text-primary font-bold mb-2">Previous Clan Experience</label>
+            <textarea
+              id="experience"
+              rows="3"
+              placeholder="Tell us about your previous clan experience..."
+              class="w-full bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-text-primary font-bold mb-2">Why do you want to join DawnReaver?</label>
+            <textarea
+              id="why-join"
+              rows="3"
+              placeholder="What attracted you to our clan?"
+              class="w-full bg-navy-900 border border-steel-dark text-text-primary px-4 py-3 focus:border-cyan-glow focus:outline-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            id="submit-btn"
+            class="w-full steel-panel px-8 py-4 text-gold-DEFAULT font-display font-bold text-lg uppercase hover:bg-gold-DEFAULT hover:text-navy-950 transition-all"
+          >
+            Submit Application
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Success Message (hidden) -->
+    <section id="success-message" class="hidden">
+      <div class="steel-panel p-12 text-center alert-border">
+        <div class="text-6xl mb-6">&#9875;</div>
+        <h2 class="text-4xl font-display font-bold text-gold-DEFAULT mb-4">Application Submitted!</h2>
+        <p class="text-steel-light text-xl mb-6">
+          Thank you for your interest in DawnReaver. Our officers will review your application and contact you on Discord.
+        </p>
+        <p class="text-text-secondary">
+          Make sure to join our Discord server if you haven't already:
+        </p>
+        <a
+          href="https://discord.gg/MmQzx7Uj"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block mt-4 steel-panel px-8 py-3 text-cyan-glow font-bold uppercase hover:bg-cyan-glow hover:text-navy-950 transition-all"
+        >
+          Join Discord
+        </a>
+      </div>
+    </section>
+
+    <!-- Back Link -->
+    <div class="text-center mt-8">
+      <a href="/recruitment" class="text-cyan-glow hover:text-gold-DEFAULT transition-colors">
+        &larr; Back to Recruitment Info
+      </a>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  // State
+  let playerData: any = null;
+
+  // DOM Elements
+  const searchInput = document.getElementById('wows-username') as HTMLInputElement;
+  const searchBtn = document.getElementById('search-btn') as HTMLButtonElement;
+  const searchError = document.getElementById('search-error') as HTMLDivElement;
+  const searchSuggestions = document.getElementById('search-suggestions') as HTMLDivElement;
+  const suggestionsList = document.getElementById('suggestions-list') as HTMLDivElement;
+
+  const step2 = document.getElementById('step-2') as HTMLElement;
+  const step3 = document.getElementById('step-3') as HTMLElement;
+  const successMessage = document.getElementById('success-message') as HTMLElement;
+
+  const playerName = document.getElementById('player-name') as HTMLElement;
+  const playerStats = document.getElementById('player-stats') as HTMLElement;
+  const memberCount = document.getElementById('member-count') as HTMLElement;
+  const maxMembers = document.getElementById('max-members') as HTMLElement;
+  const clanStatusText = document.getElementById('clan-status-text') as HTMLElement;
+  const requirementsList = document.getElementById('requirements-list') as HTMLElement;
+  const alreadyInClan = document.getElementById('already-in-clan') as HTMLElement;
+
+  const applicationForm = document.getElementById('application-form') as HTMLFormElement;
+  const formAccountId = document.getElementById('form-account-id') as HTMLInputElement;
+  const formNickname = document.getElementById('form-nickname') as HTMLInputElement;
+
+  // Search Player
+  async function searchPlayer(username: string) {
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Searching...';
+    searchError.classList.add('hidden');
+    searchSuggestions.classList.add('hidden');
+
+    try {
+      const response = await fetch(`/api/players/search?name=${encodeURIComponent(username)}`);
+      const data = await response.json();
+
+      if (!data.success) {
+        if (data.suggestions && data.suggestions.length > 0) {
+          // Show suggestions
+          searchSuggestions.classList.remove('hidden');
+          suggestionsList.innerHTML = data.suggestions
+            .map((s: string) => `<button class="suggestion-btn steel-panel px-4 py-2 text-cyan-glow hover:bg-cyan-glow hover:text-navy-950">${s}</button>`)
+            .join('');
+
+          // Add click handlers to suggestions
+          document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              searchInput.value = btn.textContent || '';
+              searchPlayer(btn.textContent || '');
+            });
+          });
+        } else {
+          searchError.textContent = data.error || 'Player not found';
+          searchError.classList.remove('hidden');
+        }
+        return;
+      }
+
+      // Success - show player data
+      playerData = data;
+      showPlayerData(data);
+
+    } catch (error) {
+      searchError.textContent = 'Failed to search. Please try again.';
+      searchError.classList.remove('hidden');
+    } finally {
+      searchBtn.disabled = false;
+      searchBtn.textContent = 'Search';
+    }
+  }
+
+  // Show Player Data
+  function showPlayerData(data: any) {
+    step2.classList.remove('hidden');
+
+    playerName.textContent = data.player.nickname;
+    formAccountId.value = data.player.accountId;
+    formNickname.value = data.player.nickname;
+
+    // Stats
+    if (data.player.hiddenProfile) {
+      playerStats.innerHTML = '<p class="text-yellow-500">Profile is hidden</p>';
+    } else if (data.player.stats) {
+      const s = data.player.stats;
+      playerStats.innerHTML = `
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <span class="text-text-secondary">Battles:</span>
+            <span class="text-text-primary font-bold ml-2">${s.battles.toLocaleString()}</span>
+          </div>
+          <div>
+            <span class="text-text-secondary">Win Rate:</span>
+            <span class="text-text-primary font-bold ml-2">${s.winRate}%</span>
+          </div>
+          <div>
+            <span class="text-text-secondary">Avg Damage:</span>
+            <span class="text-text-primary font-bold ml-2">${s.avgDamage.toLocaleString()}</span>
+          </div>
+          <div>
+            <span class="text-text-secondary">PR:</span>
+            <span class="text-text-primary font-bold ml-2">${s.pr}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Clan capacity
+    memberCount.textContent = data.clan.memberCount;
+    maxMembers.textContent = data.clan.maxMembers;
+
+    if (data.clan.hasSpace) {
+      clanStatusText.textContent = 'Clan has open slots!';
+      clanStatusText.className = 'text-green-500';
+    } else {
+      clanStatusText.textContent = 'Clan is currently full. You can still apply to be waitlisted.';
+      clanStatusText.className = 'text-yellow-500';
+    }
+
+    // Requirements check
+    if (data.meetsRequirements) {
+      const r = data.meetsRequirements;
+      requirementsList.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="${r.winRate ? 'text-green-500' : 'text-red-500'}">${r.winRate ? '&#10004;' : '&#10008;'}</span>
+          <span>Win Rate 45%+ ${r.winRate ? '' : '(not met)'}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="${r.battles ? 'text-green-500' : 'text-red-500'}">${r.battles ? '&#10004;' : '&#10008;'}</span>
+          <span>500+ Battles ${r.battles ? '' : '(not met)'}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="${r.pr ? 'text-green-500' : 'text-red-500'}">${r.pr ? '&#10004;' : '&#10008;'}</span>
+          <span>PR 800+ ${r.pr ? '' : '(not met)'}</span>
+        </div>
+      `;
+    }
+
+    // Already in clan?
+    if (data.isAlreadyInClan) {
+      alreadyInClan.classList.remove('hidden');
+      step3.classList.add('hidden');
+    } else {
+      alreadyInClan.classList.add('hidden');
+      step3.classList.remove('hidden');
+    }
+  }
+
+  // Submit Application
+  async function submitApplication(e: Event) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const discordUsername = (document.getElementById('discord-username') as HTMLInputElement).value;
+    const tierXShips = (document.getElementById('tier-x-ships') as HTMLInputElement).value;
+    const availability = (document.getElementById('availability') as HTMLInputElement).value;
+    const experience = (document.getElementById('experience') as HTMLTextAreaElement).value;
+    const whyJoin = (document.getElementById('why-join') as HTMLTextAreaElement).value;
+
+    try {
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          discordId: discordUsername.replace('#', '_'), // Temp ID until OAuth
+          discordUsername,
+          wowsNickname: formNickname.value,
+          wowsAccountId: parseInt(formAccountId.value),
+          tierXShips,
+          availability,
+          experience,
+          whyJoin,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Hide form, show success
+        document.getElementById('step-1')?.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+        successMessage.classList.remove('hidden');
+
+        // Notify Discord (via webhook or bot API)
+        await notifyDiscord(data.data);
+      } else {
+        alert('Error: ' + (data.error || 'Failed to submit application'));
+      }
+    } catch (error) {
+      alert('Failed to submit. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Application';
+    }
+  }
+
+  // Notify Discord about new application
+  async function notifyDiscord(application: any) {
+    try {
+      await fetch('/api/applications/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId: application.id }),
+      });
+    } catch (error) {
+      console.error('Failed to notify Discord:', error);
+    }
+  }
+
+  // Event Listeners
+  searchBtn.addEventListener('click', () => {
+    const username = searchInput.value.trim();
+    if (username) {
+      searchPlayer(username);
+    }
+  });
+
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const username = searchInput.value.trim();
+      if (username) {
+        searchPlayer(username);
+      }
+    }
+  });
+
+  applicationForm.addEventListener('submit', submitApplication);
+</script>

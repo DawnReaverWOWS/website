@@ -268,16 +268,22 @@ const clan = await getClanInfo();
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a
+          href="/apply"
+          class="steel-panel px-8 py-4 text-gold-DEFAULT font-display font-bold text-lg uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300"
+        >
+          Apply Now
+        </a>
+        <a
           href={clan ? `https://clans.worldofwarships.com/clans/profile/${clan.clan_id}/` : 'https://clans.worldofwarships.com'}
           target="_blank"
           rel="noopener noreferrer"
-          class="steel-panel px-8 py-4 text-gold-DEFAULT font-display font-bold text-lg uppercase tracking-wide hover:bg-gold-DEFAULT hover:text-navy-950 transition-all duration-300"
+          class="steel-panel px-8 py-4 text-cyan-glow font-display font-bold text-lg uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all duration-300"
         >
-          Apply on WoWS Portal
+          View on WoWS Portal
         </a>
         <a
           href="/"
-          class="steel-panel px-8 py-4 text-cyan-glow font-display font-bold text-lg uppercase tracking-wide hover:bg-cyan-glow hover:text-navy-950 transition-all duration-300"
+          class="steel-panel px-8 py-4 text-steel-light font-display font-bold text-lg uppercase tracking-wide hover:bg-steel-light hover:text-navy-950 transition-all duration-300"
         >
           ← Back to Home
         </a>

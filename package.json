@@ -13,7 +13,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@astrojs/vercel": "^9.0.2",
+    "@astrojs/vercel": "^9.0.4",
     "@tailwindcss/vite": "^4.1.17",
     "@vercel/postgres": "^0.10.0",
     "astro": "^5.16.4",
